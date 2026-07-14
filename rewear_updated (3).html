@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ReWear – Sustainable Clothing Exchange</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+[data-theme="light"]{
+  --bg:#FBF6EE;--bg2:#F5ECD8;--bg3:#EEE0C0;
+  --surface:#fff;--surface2:#FBF6EE;
+  --border:rgba(200,150,80,.18);--border2:rgba(200,150,80,.32);
+  --text:#2C1A0E;--text2:#6B4C2A;--text3:#9B7B5A;
+  --nav-bg:rgba(251,246,238,.95);
+  --card-sh:0 4px 20px rgba(44,26,14,.08);
+  --card-sh-h:0 18px 44px rgba(44,26,14,.14);
+  --input-bg:#F5ECD8;--modal-ov:rgba(44,26,14,.55);
+  --scrollbar:#C8A064;
+}
+[data-theme="dark"]{
+  --bg:#120904;--bg2:#1A0E08;--bg3:#221408;
+  --surface:#1E1208;--surface2:#261A0C;
+  --border:rgba(200,120,40,.18);--border2:rgba(200,120,40,.38);
+  --text:#F5DEB3;--text2:#C8A878;--text3:#8B7355;
+  --nav-bg:rgba(18,9,4,.95);
+  --card-sh:0 4px 24px rgba(0,0,0,.4);
+  --card-sh-h:0 18px 44px rgba(0,0,0,.55);
+  --input-bg:#1A0E08;--modal-ov:rgba(0,0,0,.72);
+  --scrollbar:#8B5A2B;
+}
+:root{
+  --saffron:#E8872A;--rust:#B94F2C;--turmeric:#D4A017;
+  --indigo:#3A4F8C;--teal:#2A7B7B;--burgundy:#7C2D3A;
+  --mustard:#C8960A;--olive:#6B7C35;--plum:#6B3A7C;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none;transition:background .3s,color .3s}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
+
+/* PAGE SYSTEM */
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* CURSOR */
+#cur{width:10px;height:10px;background:var(--saffron);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:multiply;transition:transform .12s}
+#curR{width:30px;height:30px;border:1.5px solid var(--saffron);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:.45;transition:width .18s,height .18s}
+[data-theme="dark"] #cur{mix-blend-mode:screen}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;width:100%;z-index:300;background:var(--nav-bg);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);height:66px;padding:0 2rem;display:flex;align-items:center;gap:2rem;transition:background .3s}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:.45rem;cursor:pointer;flex-shrink:0;text-decoration:none}
+.logo-badge{width:30px;height:30px;background:linear-gradient(135deg,var(--saffron),var(--rust));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:#fff}
+.nav-logo em{color:var(--saffron);font-style:normal}
+.nav-links{display:flex;gap:1.6rem;list-style:none;flex:1}
+.nav-links a{text-decoration:none;color:var(--text2);font-size:.84rem;font-weight:500;cursor:pointer;transition:color .2s;position:relative;padding-bottom:2px}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1.5px;background:var(--saffron);transition:width .22s;border-radius:1px}
+.nav-links a:hover,.nav-links a.nav-active{color:var(--saffron)}
+.nav-links a:hover::after,.nav-links a.nav-active::after{width:100%}
+.nav-right{display:flex;align-items:center;gap:.7rem;margin-left:auto}
+.dark-btn{width:36px;height:36px;border-radius:50%;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,transform .2s;color:var(--text2);font-size:.9rem}
+.dark-btn:hover{background:var(--bg3);transform:rotate(20deg)}
+.btn-login{background:transparent;border:1.5px solid var(--border2);color:var(--text2);padding:.44rem 1.1rem;border-radius:50px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-login:hover{border-color:var(--saffron);color:var(--saffron)}
+.btn-getstarted{background:linear-gradient(135deg,var(--saffron),var(--rust));color:#fff;border:none;padding:.46rem 1.2rem;border-radius:50px;font-size:.8rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(232,135,42,.3);transition:transform .2s,box-shadow .2s}
+.btn-getstarted:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(232,135,42,.42)}
+
+/* SHARED SECTION */
+.section{padding:5rem 2rem}
+.container{max-width:1140px;margin:0 auto}
+.sec-tag{display:inline-flex;align-items:center;gap:.4rem;font-size:.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--saffron);margin-bottom:.6rem}
+.sec-tag::before,.sec-tag::after{content:'';display:block;width:18px;height:1.5px;background:var(--saffron);border-radius:1px}
+h2.sec-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.85rem,3.8vw,2.9rem);font-weight:700;line-height:1.14;color:var(--text);margin-bottom:.8rem}
+.sec-desc{font-size:.95rem;color:var(--text3);line-height:1.8;max-width:500px}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}
+.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+
+/* ══════════════════════════════
+   HOME PAGE
+══════════════════════════════ */
+/* HERO */
+#heroSection{min-height:100vh;background:var(--bg2);display:flex;align-items:center;padding:7rem 2rem 4rem;position:relative;overflow:hidden}
+[data-theme="dark"] #heroSection{background:#0E0602}
+.hero-weave{position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(232,135,42,.045) 0,rgba(232,135,42,.045) 1px,transparent 0,transparent 38px),repeating-linear-gradient(-45deg,rgba(212,160,23,.035) 0,rgba(212,160,23,.035) 1px,transparent 0,transparent 38px);pointer-events:none}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none}
+.orb1{width:480px;height:480px;background:rgba(232,135,42,.14);top:-80px;right:-60px}
+.orb2{width:320px;height:320px;background:rgba(58,79,140,.1);bottom:0;left:3%}
+.hero-inner{max-width:1140px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;position:relative}
+.hero-badge{display:inline-flex;align-items:center;gap:.45rem;background:rgba(232,135,42,.11);border:1px solid rgba(232,135,42,.28);color:var(--saffron);padding:.36rem .9rem;border-radius:50px;font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1.4rem}
+.hero-left h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5.2vw,4.4rem);font-weight:700;line-height:1.08;margin-bottom:1.1rem;color:var(--text)}
+.hero-left h1 em{font-style:italic;background:linear-gradient(90deg,var(--saffron),var(--turmeric));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-left p{color:var(--text2);font-size:.97rem;line-height:1.8;max-width:440px;margin-bottom:2rem}
+.hero-stats{display:flex;gap:1.8rem;margin-bottom:2.2rem}
+.hst{text-align:center}
+.hst-n{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:var(--saffron)}
+.hst-l{font-size:.68rem;color:var(--text3);letter-spacing:.5px;text-transform:uppercase}
+.hst-div{width:1px;background:var(--border2)}
+.hero-btns{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-fire{background:linear-gradient(135deg,var(--saffron),var(--rust));color:#fff;border:none;padding:.78rem 1.7rem;border-radius:50px;font-family:'Outfit',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;box-shadow:0 6px 18px rgba(185,79,44,.32);transition:transform .2s,box-shadow .2s}
+.btn-fire:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(185,79,44,.48)}
+.btn-ghost-hero{background:transparent;border:1.5px solid var(--border2);color:var(--text);padding:.78rem 1.7rem;border-radius:50px;font-family:'Outfit',sans-serif;font-weight:600;font-size:.92rem;cursor:pointer;transition:border-color .2s,background .2s,transform .2s}
+.btn-ghost-hero:hover{border-color:var(--saffron);background:rgba(232,135,42,.05);transform:translateY(-3px)}
+
+/* CATEGORY SWATCH GRID */
+.hero-right{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.cat-swatch{border-radius:18px;overflow:hidden;aspect-ratio:3/4;position:relative;cursor:pointer;transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s}
+.cat-swatch:hover{transform:scale(1.05) rotate(.6deg);box-shadow:0 18px 44px rgba(0,0,0,.22)}
+.cat-swatch:nth-child(1){margin-top:1.8rem}
+.cat-swatch:nth-child(4){margin-top:-1.8rem}
+.cs-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .4s}
+.cat-swatch:hover .cs-bg{transform:scale(1.08)}
+.cs-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,rgba(0,0,0,.1) 60%,transparent 100%)}
+.cs-weave{position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.04) 0,rgba(255,255,255,.04) 2px,transparent 2px,transparent 10px)}
+.cs-emoji{position:absolute;top:1rem;left:1rem;font-size:2.4rem;filter:drop-shadow(0 2px 6px rgba(0,0,0,.4))}
+.cs-label{position:absolute;bottom:.8rem;left:.8rem;right:.8rem}
+.cs-name{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.cs-count{font-size:.7rem;color:rgba(255,255,255,.75);margin-top:.1rem}
+.cs-arrow{position:absolute;bottom:.85rem;right:.8rem;width:26px;height:26px;background:rgba(255,255,255,.2);backdrop-filter:blur(8px);border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.25);color:#fff;font-size:.8rem;transition:background .2s}
+.cat-swatch:hover .cs-arrow{background:var(--saffron)}
+
+/* How It Works */
+#howSection{background:var(--bg)}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:3rem}
+.step-card{background:var(--surface);border-radius:18px;padding:1.8rem 1.4rem;border:1px solid var(--border);box-shadow:var(--card-sh);text-align:center;transition:transform .25s,box-shadow .25s;position:relative;overflow:hidden}
+.step-card::before{content:attr(data-n);position:absolute;top:-10px;right:10px;font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:700;color:var(--saffron);opacity:.06;line-height:1}
+.step-card:hover{transform:translateY(-5px);box-shadow:var(--card-sh-h)}
+.step-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.6rem}
+.step-card:nth-child(1) .step-icon{background:rgba(232,135,42,.1)}
+.step-card:nth-child(2) .step-icon{background:rgba(58,79,140,.1)}
+.step-card:nth-child(3) .step-icon{background:rgba(42,123,123,.1)}
+.step-card:nth-child(4) .step-icon{background:rgba(107,124,53,.1)}
+.step-card h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:.4rem}
+.step-card p{font-size:.8rem;color:var(--text3);line-height:1.7}
+.step-connector{display:flex;align-items:center;justify-content:center;padding-top:2.5rem;color:var(--border2);font-size:1.2rem}
+
+/* Community teaser */
+#communityTeaser{background:var(--bg2);padding:5rem 2rem}
+.community-inner{max-width:1140px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.community-imgs{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.comm-img{border-radius:16px;overflow:hidden;position:relative}
+.comm-img img{width:100%;height:160px;object-fit:cover;display:block;transition:transform .4s}
+.comm-img:hover img{transform:scale(1.06)}
+.comm-img:nth-child(1){grid-column:1/-1;height:auto}
+.comm-img:nth-child(1) img{height:200px}
+.comm-stat-row{display:flex;gap:2rem;margin:1.8rem 0}
+.cstat{text-align:center;flex:1;background:var(--surface);border-radius:14px;padding:1.1rem;border:1px solid var(--border)}
+.cstat-n{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--saffron)}
+.cstat-l{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+
+/* ══════════════════════════════
+   BROWSE PAGE
+══════════════════════════════ */
+#browsePage{padding-top:66px}
+.browse-hero{background:linear-gradient(135deg,var(--rust) 0%,var(--indigo) 100%);padding:3rem 2rem;position:relative;overflow:hidden}
+.browse-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-55deg,rgba(255,255,255,.04) 0,rgba(255,255,255,.04) 1px,transparent 1px,transparent 18px)}
+.browse-hero h1{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:700;color:#fff;margin-bottom:.5rem;position:relative}
+.browse-hero p{color:rgba(255,255,255,.7);font-size:.92rem;position:relative;max-width:500px}
+/* search bar in browse hero */
+.browse-search-row{display:flex;gap:.8rem;margin-top:1.5rem;position:relative;flex-wrap:wrap}
+.bsearch{position:relative;flex:1;min-width:220px;max-width:380px}
+.bsearch input{width:100%;padding:.7rem 1rem .7rem 2.4rem;border-radius:50px;border:none;font-family:'Outfit',sans-serif;font-size:.88rem;background:rgba(255,255,255,.15);color:#fff;backdrop-filter:blur(8px);outline:none;transition:background .2s}
+.bsearch input::placeholder{color:rgba(255,255,255,.6)}
+.bsearch input:focus{background:rgba(255,255,255,.22)}
+.bsearch-icon{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);font-size:.85rem;opacity:.7;pointer-events:none}
+.bloc-sel{padding:.7rem 1.1rem;border-radius:50px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-family:'Outfit',sans-serif;font-size:.82rem;outline:none;cursor:pointer;backdrop-filter:blur(8px)}
+.bloc-sel option{background:#1a1a2e;color:#fff}
+
+/* Category strip */
+.cat-strip{display:flex;gap:.5rem;overflow-x:auto;padding:.5rem 0 1rem;scrollbar-width:none}
+.cat-strip::-webkit-scrollbar{display:none}
+.cat-pill{padding:.45rem 1.1rem;border-radius:50px;font-size:.78rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);background:var(--surface);color:var(--text2);white-space:nowrap;transition:all .2s;flex-shrink:0;display:flex;align-items:center;gap:.3rem}
+.cat-pill span{font-size:1rem}
+.cat-pill.active,.cat-pill:hover{background:var(--saffron);color:#fff;border-color:var(--saffron)}
+.cat-pill.cat-indigo.active,.cat-pill.cat-indigo:hover{background:var(--indigo);border-color:var(--indigo)}
+.cat-pill.cat-teal.active,.cat-pill.cat-teal:hover{background:var(--teal);border-color:var(--teal)}
+.cat-pill.cat-rust.active,.cat-pill.cat-rust:hover{background:var(--rust);border-color:var(--rust)}
+.cat-pill.cat-plum.active,.cat-pill.cat-plum:hover{background:var(--plum);border-color:var(--plum)}
+.cat-pill.cat-olive.active,.cat-pill.cat-olive:hover{background:var(--olive);border-color:var(--olive)}
+
+/* Browse section tabs */
+.browse-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:2rem}
+.btab{padding:.6rem 1.4rem;font-size:.84rem;font-weight:600;cursor:pointer;border:none;background:none;color:var(--text3);border-bottom:2.5px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;display:flex;align-items:center;gap:.4rem}
+.btab.active{color:var(--saffron);border-bottom-color:var(--saffron)}
+.btab:hover{color:var(--text)}
+.btab-badge{background:var(--saffron);color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .45rem;border-radius:50px;min-width:18px;text-align:center}
+
+/* Sub-category row (e.g. sneaker types) */
+.subcat-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.subcat-chip{padding:.3rem .85rem;border-radius:50px;font-size:.74rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text2);transition:all .18s}
+.subcat-chip.active,.subcat-chip:hover{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+
+/* ITEM CARDS */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.4rem}
+.item-card{border-radius:18px;overflow:hidden;background:var(--surface);box-shadow:var(--card-sh);border:1px solid var(--border);transition:transform .28s cubic-bezier(.34,1.56,.64,1),box-shadow .28s;cursor:pointer}
+.item-card:hover{transform:translateY(-7px);box-shadow:var(--card-sh-h)}
+.ic-img{height:195px;position:relative;overflow:hidden}
+.ic-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.item-card:hover .ic-img img{transform:scale(1.06)}
+.ic-badge{position:absolute;top:.7rem;right:.7rem;padding:.25rem .7rem;border-radius:50px;font-size:.62rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.badge-swap{background:rgba(232,135,42,.95);color:#fff}
+.badge-donate{background:rgba(42,123,123,.95);color:#fff}
+.ic-wish{position:absolute;top:.7rem;left:.7rem;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.88);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:transform .2s;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.ic-wish:hover{transform:scale(1.22)}
+.ic-wish.saved{color:#E8502A}
+.ic-nearby{position:absolute;bottom:.65rem;left:.65rem;display:flex;align-items:center;gap:.25rem;background:rgba(58,79,140,.9);color:#fff;padding:.2rem .6rem;border-radius:50px;font-size:.62rem;font-weight:600}
+.ic-body{padding:1.1rem}
+.ic-title{font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ic-meta{font-size:.73rem;color:var(--text3);margin-bottom:.65rem;display:flex;align-items:center;gap:.25rem}
+.ic-chips{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.85rem}
+.chip{padding:.18rem .6rem;border-radius:50px;font-size:.64rem;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.chip-sz{background:rgba(232,135,42,.1);color:var(--rust)}
+.chip-ln{background:rgba(107,124,53,.1);color:var(--olive)}
+.chip-gd{background:rgba(212,160,23,.1);color:var(--mustard)}
+.chip-fr{background:rgba(185,79,44,.08);color:var(--rust)}
+.chip-cat{background:rgba(58,79,140,.09);color:var(--indigo)}
+.ic-actions{display:flex;gap:.45rem}
+.btn-ic{flex:1;padding:.55rem;border-radius:10px;font-family:'Outfit',sans-serif;font-weight:700;font-size:.76rem;cursor:pointer;border:none;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:.3rem}
+.btn-swap-ic{background:linear-gradient(135deg,var(--saffron),var(--rust));color:#fff;box-shadow:0 3px 10px rgba(185,79,44,.22)}
+.btn-swap-ic:hover{transform:translateY(-2px);box-shadow:0 7px 18px rgba(185,79,44,.38)}
+.btn-don-ic{background:linear-gradient(135deg,var(--teal),#1F5F5F);color:#fff;box-shadow:0 3px 10px rgba(42,123,123,.22)}
+.btn-don-ic:hover{transform:translateY(-2px);box-shadow:0 7px 18px rgba(42,123,123,.38)}
+.btn-bk{width:36px;height:36px;flex:none;border-radius:10px;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;transition:background .18s,transform .18s}
+.btn-bk:hover{background:var(--bg3);transform:scale(1.08)}
+
+/* Section header row */
+.sec-hrow{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.4rem;flex-wrap:wrap;gap:.8rem}
+.see-all{font-size:.78rem;font-weight:600;color:var(--saffron);cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:.2rem}
+.see-all:hover{text-decoration:underline}
+
+/* Trending badge */
+.trending-badge{position:absolute;top:.7rem;right:.7rem;display:flex;align-items:center;gap:.25rem;background:rgba(185,79,44,.9);color:#fff;padding:.22rem .65rem;border-radius:50px;font-size:.62rem;font-weight:700;z-index:1}
+
+/* No results */
+.no-res{grid-column:1/-1;text-align:center;padding:3.5rem 2rem;color:var(--text3)}
+.no-res p{font-size:.92rem;margin-top:.6rem}
+
+/* ══════════════════════════════
+   CATEGORY DETAIL PAGE
+══════════════════════════════ */
+#catPage{padding-top:66px}
+.cat-hero{padding:3rem 2rem;position:relative;overflow:hidden;min-height:220px;display:flex;align-items:flex-end}
+.cat-hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.55)}
+.cat-hero-content{position:relative;max-width:1140px;margin:0 auto;width:100%;color:#fff}
+.cat-hero-emoji{font-size:3rem;margin-bottom:.5rem;display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
+.cat-hero h1{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:700;margin-bottom:.3rem}
+.cat-hero p{color:rgba(255,255,255,.8);font-size:.9rem}
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;color:var(--saffron);font-size:.82rem;font-weight:600;cursor:pointer;margin-bottom:1.5rem;transition:gap .2s}
+.back-btn:hover{gap:.6rem}
+
+/* ══════════════════════════════
+   HOW IT WORKS PAGE
+══════════════════════════════ */
+#howPage{padding-top:66px}
+.how-full-hero{background:linear-gradient(135deg,var(--olive),var(--teal));padding:4rem 2rem;text-align:center}
+.how-full-hero h1{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:700;color:#fff;margin-bottom:.8rem}
+.how-full-hero p{color:rgba(255,255,255,.8);max-width:500px;margin:0 auto;line-height:1.8}
+.steps-full{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.8rem;margin-top:3rem}
+.step-full{background:var(--surface);border-radius:20px;padding:2rem;border:1px solid var(--border);box-shadow:var(--card-sh);position:relative;overflow:hidden}
+.step-full::before{content:attr(data-n);position:absolute;top:-8px;right:12px;font-family:'Cormorant Garamond',serif;font-size:6rem;font-weight:700;color:var(--saffron);opacity:.05;line-height:1}
+.step-full-icon{font-size:2.2rem;margin-bottom:1rem}
+.step-full h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:.5rem}
+.step-full p{font-size:.85rem;color:var(--text3);line-height:1.75}
+.faq-section{margin-top:4rem}
+.faq-item{border-bottom:1px solid var(--border);padding:1.2rem 0;cursor:pointer}
+.faq-q{font-weight:600;font-size:.93rem;color:var(--text);display:flex;justify-content:space-between;align-items:center}
+.faq-q span{color:var(--saffron);font-size:1.1rem;transition:transform .25s}
+.faq-item.open .faq-q span{transform:rotate(45deg)}
+.faq-a{display:none;font-size:.85rem;color:var(--text3);line-height:1.8;padding-top:.8rem}
+.faq-item.open .faq-a{display:block}
+
+/* ══════════════════════════════
+   COMMUNITY PAGE
+══════════════════════════════ */
+#communityPage{padding-top:66px}
+.comm-hero{background:linear-gradient(135deg,var(--burgundy),var(--plum));padding:3.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.comm-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0,rgba(255,255,255,.04) 1px,transparent 1px,transparent 22px)}
+.comm-hero h1{font-family:'Cormorant Garamond',serif;font-size:2.6rem;color:#fff;font-weight:700;margin-bottom:.6rem;position:relative}
+.comm-hero p{color:rgba(255,255,255,.75);max-width:480px;margin:0 auto;line-height:1.8;position:relative}
+.members-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.2rem;margin-top:2.5rem}
+.member-card{background:var(--surface);border-radius:16px;padding:1.5rem;text-align:center;border:1px solid var(--border);box-shadow:var(--card-sh);transition:transform .22s,box-shadow .22s}
+.member-card:hover{transform:translateY(-4px);box-shadow:var(--card-sh-h)}
+.member-av{width:64px;height:64px;border-radius:50%;object-fit:cover;margin:0 auto .8rem;border:3px solid var(--saffron);display:block}
+.member-av-placeholder{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .8rem;font-size:1.6rem;border:3px solid var(--saffron)}
+.member-name{font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:.2rem}
+.member-loc{font-size:.74rem;color:var(--text3)}
+.member-stats{display:flex;gap:.5rem;justify-content:center;margin-top:.8rem}
+.mem-stat{background:var(--bg2);border-radius:8px;padding:.3rem .65rem;font-size:.68rem;color:var(--text2);font-weight:600}
+.activity-feed{margin-top:3rem}
+.activity-item{display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border)}
+.act-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),var(--rust));display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.act-text{font-size:.84rem;color:var(--text2);line-height:1.6}
+.act-text strong{color:var(--text)}
+.act-time{font-size:.72rem;color:var(--text3);margin-top:.2rem}
+
+/* ══════════════════════════════
+   LOGIN MODAL
+══════════════════════════════ */
+.modal-ov{display:none;position:fixed;inset:0;z-index:400;background:var(--modal-ov);backdrop-filter:blur(5px);align-items:center;justify-content:center}
+.modal-ov.open{display:flex}
+.modal-box{background:var(--surface);border-radius:22px;padding:2.5rem;max-width:400px;width:90%;animation:popUp .32s cubic-bezier(.34,1.56,.64,1);border:1px solid var(--border);position:relative}
+@keyframes popUp{from{transform:scale(.72);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-close-x{position:absolute;top:1rem;right:1rem;background:var(--bg2);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.9rem;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:background .2s}
+.modal-close-x:hover{background:var(--bg3)}
+.modal-box h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--text);margin-bottom:1.4rem;text-align:center}
+.modal-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.4rem}
+.mtab{flex:1;padding:.55rem;font-size:.84rem;font-weight:600;cursor:pointer;border:none;background:none;color:var(--text3);border-bottom:2.5px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s}
+.mtab.active{color:var(--saffron);border-bottom-color:var(--saffron)}
+.modal-form{display:none}.modal-form.active{display:block}
+.mfg{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.9rem}
+.mfg label{font-size:.73rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.mfg input{padding:.62rem .9rem;border:1.5px solid var(--border2);border-radius:10px;font-family:'Outfit',sans-serif;font-size:.88rem;color:var(--text);background:var(--input-bg);outline:none;transition:border-color .2s}
+.mfg input:focus{border-color:var(--saffron)}
+.btn-modal-submit{width:100%;padding:.8rem;background:linear-gradient(135deg,var(--saffron),var(--rust));color:#fff;border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;margin-top:.4rem;box-shadow:0 5px 18px rgba(185,79,44,.28);transition:transform .18s,box-shadow .18s}
+.btn-modal-submit:hover{transform:translateY(-2px);box-shadow:0 9px 24px rgba(185,79,44,.4)}
+.modal-or{text-align:center;font-size:.76rem;color:var(--text3);margin:.8rem 0;position:relative}
+.modal-or::before,.modal-or::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:var(--border)}
+.modal-or::before{left:0}.modal-or::after{right:0}
+
+/* Action confirm modal */
+.confirm-modal{background:var(--surface);border-radius:22px;padding:2.3rem;max-width:390px;width:90%;animation:popUp .32s cubic-bezier(.34,1.56,.64,1);border:1px solid var(--border);text-align:center}
+.conf-icon{width:62px;height:62px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto .9rem}
+.confirm-modal h3{font-family:'Cormorant Garamond',serif;font-size:1.55rem;color:var(--text);margin-bottom:.5rem}
+.confirm-modal p{font-size:.85rem;color:var(--text3);line-height:1.7;margin-bottom:1.5rem}
+.btn-conf{background:linear-gradient(135deg,var(--saffron),var(--rust));color:#fff;border:none;padding:.68rem 1.8rem;border-radius:50px;font-family:'Outfit',sans-serif;font-weight:700;font-size:.86rem;cursor:pointer;box-shadow:0 4px 14px rgba(185,79,44,.28)}
+
+/* UPLOAD PAGE */
+#uploadPage{padding-top:66px}
+.upload-hero{background:linear-gradient(135deg,var(--mustard),var(--rust));padding:3rem 2rem}
+.upload-hero h1{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:#fff;margin-bottom:.4rem}
+.upload-hero p{color:rgba(255,255,255,.8);font-size:.9rem}
+.upload-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:3rem;margin-top:3rem;align-items:start}
+.tips-box{display:grid;gap:.75rem}
+.tip-row{display:flex;align-items:center;gap:.8rem;padding:.85rem 1rem;border-radius:12px;background:var(--surface);border:1px solid var(--border);font-size:.82rem;color:var(--text2);font-weight:500}
+.tip-ic{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.form-box{background:var(--surface);border-radius:22px;padding:2.2rem;box-shadow:var(--card-sh);border:1px solid var(--border)}
+.dz{border:2px dashed rgba(232,135,42,.35);border-radius:14px;padding:1.8rem;text-align:center;cursor:pointer;background:rgba(232,135,42,.03);margin-bottom:1.3rem;transition:border-color .2s,background .2s}
+.dz:hover{border-color:var(--saffron);background:rgba(232,135,42,.07)}
+.dz-ic{font-size:2.5rem;margin-bottom:.4rem}
+.dz p{font-size:.82rem;color:var(--text3)}.dz strong{color:var(--saffron)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.fg{display:flex;flex-direction:column;gap:.35rem}.fg.full{grid-column:1/-1}
+.fg label{font-size:.7rem;font-weight:700;color:var(--text2);letter-spacing:.6px;text-transform:uppercase}
+.fg input,.fg select,.fg textarea{padding:.62rem .9rem;border:1.5px solid var(--border2);border-radius:10px;font-family:'Outfit',sans-serif;font-size:.86rem;color:var(--text);background:var(--input-bg);outline:none;transition:border-color .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--saffron)}
+.fg textarea{resize:vertical;min-height:82px}
+.btn-submit-up{width:100%;margin-top:1rem;padding:.88rem;border:none;border-radius:12px;background:linear-gradient(135deg,var(--saffron),var(--rust));color:#fff;font-family:'Outfit',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;box-shadow:0 5px 20px rgba(185,79,44,.28);transition:transform .2s,box-shadow .2s}
+.btn-submit-up:hover{transform:translateY(-2px);box-shadow:0 9px 26px rgba(185,79,44,.4)}
+.toast{display:none;margin-top:.9rem;padding:.85rem;border-radius:10px;text-align:center;font-weight:600;font-size:.85rem;background:rgba(107,124,53,.1);border:1px solid var(--olive);color:var(--olive)}
+
+/* IMPACT section */
+#impactSection{background:var(--bg);position:relative;overflow:hidden}
+.ctrs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;margin-top:2.8rem}
+.ctr{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem 1.5rem;text-align:center;transition:transform .22s,box-shadow .22s}
+.ctr:hover{transform:translateY(-4px);box-shadow:var(--card-sh-h)}
+.ctr-ic{width:54px;height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto .9rem;font-size:1.5rem}
+.ctr:nth-child(1) .ctr-ic{background:rgba(232,135,42,.1)}
+.ctr:nth-child(2) .ctr-ic{background:rgba(58,79,140,.1)}
+.ctr:nth-child(3) .ctr-ic{background:rgba(42,123,123,.1)}
+.ctr-num{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:700;line-height:1;margin-bottom:.3rem}
+.ctr:nth-child(1) .ctr-num{color:var(--saffron)}
+.ctr:nth-child(2) .ctr-num{color:var(--indigo)}
+.ctr:nth-child(3) .ctr-num{color:var(--teal)}
+.ctr-label{font-weight:600;font-size:.88rem;color:var(--text)}
+.ctr-sub{font-size:.73rem;color:var(--text3);margin-top:.2rem}
+
+/* CTA */
+.cta-section{background:var(--bg2);padding:5rem 2rem}
+.cta-box{max-width:820px;margin:0 auto;background:linear-gradient(135deg,var(--rust) 0%,#7C2D3A 50%,var(--indigo) 100%);border-radius:26px;padding:3.8rem 2.5rem;text-align:center;position:relative;overflow:hidden}
+.cta-box::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-55deg,rgba(255,255,255,.04) 0,rgba(255,255,255,.04) 1px,transparent 1px,transparent 18px)}
+.cta-dots{display:flex;justify-content:center;gap:.45rem;margin-bottom:1.6rem;position:relative}
+.cdot{width:11px;height:11px;border-radius:50%;animation:cp 2s ease-in-out infinite}
+.cdot:nth-child(1){background:var(--saffron);animation-delay:0s}.cdot:nth-child(2){background:#8090C4;animation-delay:.15s}.cdot:nth-child(3){background:#6DBDBD;animation-delay:.3s}.cdot:nth-child(4){background:var(--turmeric);animation-delay:.45s}.cdot:nth-child(5){background:#C47080;animation-delay:.6s}
+@keyframes cp{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.6);opacity:1}}
+.cta-box h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;color:#fff;margin-bottom:.8rem;position:relative}
+.cta-box h2 em{font-style:italic;color:#F5C882}
+.cta-box p{color:rgba(255,255,255,.68);max-width:430px;margin:0 auto 2rem;line-height:1.8;font-size:.93rem;position:relative}
+.cta-btns{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;position:relative}
+.btn-cta-w{background:#fff;color:var(--rust);border:none;padding:.82rem 1.9rem;border-radius:50px;font-family:'Outfit',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;box-shadow:0 5px 18px rgba(0,0,0,.2);transition:transform .2s,box-shadow .2s}
+.btn-cta-w:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.3)}
+.btn-cta-g{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:.82rem 1.9rem;border-radius:50px;font-family:'Outfit',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;transition:background .2s,transform .2s}
+.btn-cta-g:hover{background:rgba(255,255,255,.18);transform:translateY(-3px)}
+
+/* FOOTER */
+footer{background:var(--bg);border-top:1px solid var(--border);padding:1.8rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-logo{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;color:var(--text)}
+.f-logo em{color:var(--saffron);font-style:normal}
+footer p{font-size:.76rem;color:var(--text3)}
+.f-dots{display:flex;gap:.4rem}
+.fdot{width:9px;height:9px;border-radius:50%}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .hero-inner,.community-inner,.upload-grid{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .steps-grid{grid-template-columns:1fr 1fr}
+  .ctrs-grid{grid-template-columns:1fr 1fr}
+  .nav-links{display:none}
+}
+/* ══════════════════════════════
+   PROVIDER PARTNERSHIP PAGE
+══════════════════════════════ */
+#providerPage{padding-top:66px}
+.provider-hero{background:linear-gradient(135deg,var(--indigo) 0%,var(--plum) 100%);padding:4rem 2rem;position:relative;overflow:hidden;text-align:center}
+.provider-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0,rgba(255,255,255,.04) 1px,transparent 1px,transparent 22px)}
+.provider-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4.5vw,3.2rem);font-weight:700;color:#fff;margin-bottom:.8rem;position:relative}
+.provider-hero p{color:rgba(255,255,255,.8);max-width:560px;margin:0 auto;line-height:1.85;font-size:.97rem;position:relative}
+.provider-hero-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;padding:.36rem .95rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1.2rem;position:relative}
+
+/* Provider stats strip */
+.prov-stats-strip{display:flex;gap:0;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto}
+.pstat{flex:1;min-width:160px;text-align:center;padding:1.3rem 1rem;border-right:1px solid var(--border)}
+.pstat:last-child{border-right:none}
+.pstat-n{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:700;color:var(--saffron);line-height:1}
+.pstat-l{font-size:.7rem;color:var(--text3);margin-top:.3rem;text-transform:uppercase;letter-spacing:.5px}
+
+/* Provider grid */
+.provider-grid{display:grid;grid-template-columns:1fr 1.55fr;gap:3.5rem;margin-top:3.5rem;align-items:start}
+.prov-why{display:grid;gap:.85rem;margin-top:1.5rem}
+.prov-why-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.3rem;display:flex;align-items:flex-start;gap:1rem;transition:transform .22s,box-shadow .22s}
+.prov-why-card:hover{transform:translateY(-3px);box-shadow:var(--card-sh-h)}
+.pwy-ic{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0}
+.pwy-title{font-weight:700;font-size:.9rem;color:var(--text);margin-bottom:.2rem}
+.pwy-desc{font-size:.79rem;color:var(--text3);line-height:1.65}
+
+/* Provider form */
+.prov-form-box{background:var(--surface);border-radius:22px;padding:2.4rem;box-shadow:var(--card-sh);border:1px solid var(--border)}
+.prov-form-box h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:.4rem}
+.prov-form-box p{font-size:.82rem;color:var(--text3);margin-bottom:1.6rem;line-height:1.6}
+.pfgrid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.pfg{display:flex;flex-direction:column;gap:.35rem}.pfg.full{grid-column:1/-1}
+.pfg label{font-size:.7rem;font-weight:700;color:var(--text2);letter-spacing:.6px;text-transform:uppercase}
+.pfg input,.pfg select,.pfg textarea{padding:.64rem .92rem;border:1.5px solid var(--border2);border-radius:10px;font-family:'Outfit',sans-serif;font-size:.86rem;color:var(--text);background:var(--input-bg);outline:none;transition:border-color .2s}
+.pfg input:focus,.pfg select:focus,.pfg textarea:focus{border-color:var(--saffron)}
+.pfg textarea{resize:vertical;min-height:80px}
+.price-row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.pdz{border:2px dashed rgba(232,135,42,.35);border-radius:14px;padding:1.5rem;text-align:center;cursor:pointer;background:rgba(232,135,42,.03);transition:border-color .2s,background .2s;margin-top:.3rem}
+.pdz:hover{border-color:var(--saffron);background:rgba(232,135,42,.07)}
+.pdz-ic{font-size:2.2rem;margin-bottom:.4rem}
+.pdz p{font-size:.8rem;color:var(--text3)}.pdz strong{color:var(--saffron)}
+.prov-submit-btn{width:100%;margin-top:1.2rem;padding:.9rem;border:none;border-radius:12px;background:linear-gradient(135deg,var(--indigo),var(--plum));color:#fff;font-family:'Outfit',sans-serif;font-size:.93rem;font-weight:700;cursor:pointer;box-shadow:0 5px 20px rgba(58,79,140,.28);transition:transform .2s,box-shadow .2s}
+.prov-submit-btn:hover{transform:translateY(-2px);box-shadow:0 9px 26px rgba(58,79,140,.4)}
+.prov-toast{display:none;margin-top:.9rem;padding:.85rem;border-radius:10px;text-align:center;font-weight:600;font-size:.85rem;background:rgba(58,79,140,.1);border:1px solid var(--indigo);color:var(--indigo)}
+
+/* ══════════════════════════════
+   VERIFICATION PROCESS SECTION
+══════════════════════════════ */
+.verify-section{background:var(--bg2);padding:5rem 2rem}
+.verify-pipeline{display:flex;align-items:stretch;gap:0;margin-top:3rem;position:relative;flex-wrap:wrap}
+.vstep{flex:1;min-width:180px;background:var(--surface);border:1px solid var(--border);padding:2rem 1.5rem;text-align:center;position:relative;transition:transform .22s,box-shadow .22s}
+.vstep:first-child{border-radius:18px 0 0 18px}
+.vstep:last-child{border-radius:0 18px 18px 0}
+.vstep:hover{transform:translateY(-5px);box-shadow:var(--card-sh-h);z-index:2}
+.vstep-n{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),var(--rust));color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;margin:0 auto .9rem}
+.vstep-ic{font-size:2.2rem;margin-bottom:.8rem}
+.vstep h4{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:.4rem}
+.vstep p{font-size:.78rem;color:var(--text3);line-height:1.7}
+.varrow{display:flex;align-items:center;color:var(--saffron);font-size:1.4rem;padding:0 .2rem;flex-shrink:0;align-self:center;margin-top:-10px}
+.verify-trust{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:3.5rem}
+.vtrust{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;text-align:center}
+.vtrust-ic{font-size:2rem;margin-bottom:.6rem}
+.vtrust h5{font-weight:700;font-size:.9rem;color:var(--text);margin-bottom:.3rem}
+.vtrust p{font-size:.78rem;color:var(--text3);line-height:1.65}
+
+/* ══════════════════════════════
+   MARKETPLACE PAGE
+══════════════════════════════ */
+#marketplacePage{padding-top:66px}
+.mkt-hero{background:linear-gradient(135deg,var(--teal) 0%,var(--olive) 100%);padding:3.5rem 2rem;position:relative;overflow:hidden}
+.mkt-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-55deg,rgba(255,255,255,.04) 0,rgba(255,255,255,.04) 1px,transparent 1px,transparent 18px)}
+.mkt-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,4vw,2.9rem);font-weight:700;color:#fff;margin-bottom:.5rem;position:relative}
+.mkt-hero p{color:rgba(255,255,255,.8);font-size:.93rem;max-width:520px;line-height:1.75;position:relative}
+.mkt-search-row{display:flex;gap:.8rem;margin-top:1.5rem;flex-wrap:wrap;position:relative}
+.mkt-filter-row{display:flex;gap:.6rem;margin-top:1.2rem;flex-wrap:wrap;position:relative}
+.mkt-filter-chip{padding:.38rem 1rem;border-radius:50px;font-size:.78rem;font-weight:600;cursor:pointer;border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;transition:all .2s;white-space:nowrap}
+.mkt-filter-chip.active,.mkt-filter-chip:hover{background:rgba(255,255,255,.25);border-color:#fff}
+
+/* Marketplace product cards */
+.mkt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.5rem;margin-top:2rem}
+.mkt-card{border-radius:18px;overflow:hidden;background:var(--surface);box-shadow:var(--card-sh);border:1px solid var(--border);transition:transform .28s cubic-bezier(.34,1.56,.64,1),box-shadow .28s;cursor:pointer}
+.mkt-card:hover{transform:translateY(-7px);box-shadow:var(--card-sh-h)}
+.mkt-img{height:210px;position:relative;overflow:hidden}
+.mkt-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.mkt-card:hover .mkt-img img{transform:scale(1.06)}
+.mkt-provider-badge{position:absolute;top:.7rem;left:.7rem;display:flex;align-items:center;gap:.3rem;background:rgba(58,79,140,.92);color:#fff;padding:.22rem .65rem;border-radius:50px;font-size:.62rem;font-weight:700}
+.mkt-cond-badge{position:absolute;top:.7rem;right:.7rem;padding:.22rem .65rem;border-radius:50px;font-size:.62rem;font-weight:700;background:rgba(42,123,123,.92);color:#fff}
+.mkt-disc-ribbon{position:absolute;bottom:.65rem;left:.65rem;background:linear-gradient(135deg,var(--saffron),var(--rust));color:#fff;padding:.22rem .7rem;border-radius:50px;font-size:.65rem;font-weight:800;letter-spacing:.3px}
+.mkt-body{padding:1.2rem}
+.mkt-title{font-weight:700;font-size:.93rem;color:var(--text);margin-bottom:.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mkt-provider{font-size:.73rem;color:var(--text3);margin-bottom:.7rem;display:flex;align-items:center;gap:.3rem}
+.mkt-prices{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.95rem}
+.mkt-orig{font-size:.8rem;color:var(--text3);text-decoration:line-through}
+.mkt-disc{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--saffron);line-height:1}
+.mkt-saving{font-size:.7rem;font-weight:700;color:var(--olive);background:rgba(107,124,53,.12);padding:.15rem .5rem;border-radius:50px}
+.mkt-actions{display:flex;gap:.5rem}
+.btn-mkt-buy{flex:1;padding:.6rem;border-radius:10px;font-family:'Outfit',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;border:none;background:linear-gradient(135deg,var(--teal),#1F5F5F);color:#fff;transition:all .18s;box-shadow:0 3px 10px rgba(42,123,123,.22)}
+.btn-mkt-buy:hover{transform:translateY(-2px);box-shadow:0 7px 18px rgba(42,123,123,.38)}
+.btn-mkt-save{width:36px;height:36px;flex:none;border-radius:10px;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;transition:background .18s,transform .18s}
+.btn-mkt-save:hover{background:var(--bg3);transform:scale(1.08)}
+.mkt-empty{grid-column:1/-1;text-align:center;padding:4rem 2rem;color:var(--text3)}
+.mkt-empty-ic{font-size:3.5rem;margin-bottom:.8rem}
+
+@media(max-width:900px){
+  .provider-grid{grid-template-columns:1fr}
+  .verify-trust{grid-template-columns:1fr 1fr}
+  .pfgrid,.price-row{grid-template-columns:1fr}
+  .pfg.full,.price-row .pfg{grid-column:auto}
+}
+@media(max-width:600px){
+  .verify-trust{grid-template-columns:1fr}
+  .vstep:first-child{border-radius:18px 18px 0 0}
+  .vstep:last-child{border-radius:0 0 18px 18px}
+  .varrow{transform:rotate(90deg)}
+  .verify-pipeline{flex-direction:column}
+  .pstat{min-width:50%}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="curR"></div>
+
+<!-- ════════════ NAV ════════════ -->
+<nav id="mainNav">
+  <div class="nav-logo" onclick="showPage('home')">
+    <div class="logo-badge">♻</div>Re<em>Wear</em>
+  </div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')" data-page="home" class="nav-active">Home</a></li>
+    <li><a onclick="showPage('browse')" data-page="browse">Browse</a></li>
+    <li><a onclick="showPage('marketplace')" data-page="marketplace">Marketplace</a></li>
+    <li><a onclick="showPage('how')" data-page="how">How It Works</a></li>
+    <li><a onclick="showPage('community')" data-page="community">Community</a></li>
+    <li><a onclick="showPage('provider')" data-page="provider">For Providers</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+    <button class="btn-login" onclick="openLogin()">Login</button>
+    <button class="btn-getstarted" onclick="showPage('provider')">Partner With Us</button>
+  </div>
+</nav>
+
+<!-- ════════════ HOME PAGE ════════════ -->
+<div id="homePage" class="page active">
+
+  <!-- HERO -->
+  <section id="heroSection">
+    <div class="hero-weave"></div>
+    <div class="hero-orb orb1"></div>
+    <div class="hero-orb orb2"></div>
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-badge">🌿 Sustainable Fashion Movement</div>
+        <h1>ReWear – Give Your<br/>Clothes a <em>Second Life</em></h1>
+        <p>Join thousands giving pre-loved clothing a second life across India — and shop deeply discounted unsold stock from verified local providers. Every purchase saves textiles from landfills.</p>
+        <div class="hero-stats">
+          <div class="hst"><div class="hst-n">8.4K+</div><div class="hst-l">Items Bought</div></div>
+          <div class="hst-div"></div>
+          <div class="hst"><div class="hst-n">1.2K</div><div class="hst-l">Members</div></div>
+          <div class="hst-div"></div>
+          <div class="hst"><div class="hst-n">18+</div><div class="hst-l">Cities</div></div>
+        </div>
+        <div class="hero-btns">
+          <button class="btn-fire" onclick="showPage('marketplace')">🛍 Shop Marketplace</button>
+          <button class="btn-ghost-hero" onclick="showPage('browse')">Browse Clothes</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="cat-swatch" onclick="openCategory('Footwear')">
+          <div class="cs-bg" style="background-image:url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80')"></div>
+          <div class="cs-overlay"></div><div class="cs-weave"></div>
+          <div class="cs-emoji">👟</div>
+          <div class="cs-label"><div class="cs-name">Footwear</div><div class="cs-count">48 items</div></div>
+          <div class="cs-arrow">→</div>
+        </div>
+        <div class="cat-swatch" onclick="openCategory('Dresses')">
+          <div class="cs-bg" style="background-image:url('https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&q=80')"></div>
+          <div class="cs-overlay"></div><div class="cs-weave"></div>
+          <div class="cs-emoji">👗</div>
+          <div class="cs-label"><div class="cs-name">Dresses</div><div class="cs-count">62 items</div></div>
+          <div class="cs-arrow">→</div>
+        </div>
+        <div class="cat-swatch" onclick="openCategory('Tops')">
+          <div class="cs-bg" style="background-image:url('https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80')"></div>
+          <div class="cs-overlay"></div><div class="cs-weave"></div>
+          <div class="cs-emoji">👕</div>
+          <div class="cs-label"><div class="cs-name">Tops</div><div class="cs-count">91 items</div></div>
+          <div class="cs-arrow">→</div>
+        </div>
+        <div class="cat-swatch" onclick="openCategory('Accessories')">
+          <div class="cs-bg" style="background-image:url('https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80')"></div>
+          <div class="cs-overlay"></div><div class="cs-weave"></div>
+          <div class="cs-emoji">👜</div>
+          <div class="cs-label"><div class="cs-name">Bags & Clutches</div><div class="cs-count">35 items</div></div>
+          <div class="cs-arrow">→</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS (teaser) -->
+  <section id="howSection" class="section">
+    <div class="container">
+      <div class="reveal" style="text-align:center">
+        <div class="sec-tag">How It Works</div>
+        <h2 class="sec-title">Simple. Sustainable. Social.</h2>
+        <p class="sec-desc" style="margin:0 auto">ReWear makes fashion circular in four easy steps.</p>
+      </div>
+      <div class="steps-grid" style="margin-top:2.8rem">
+        <div class="step-card reveal d1" data-n="1">
+          <div class="step-icon">📸</div>
+          <h3>List Your Item</h3>
+          <p>Upload photos and describe your clothing — size, condition, and list it for purchase by the community.</p>
+        </div>
+        <div class="step-card reveal d2" data-n="2">
+          <div class="step-icon">🔍</div>
+          <h3>Discover & Browse</h3>
+          <p>Search by category, location, or condition. Filter trending items, recent additions, or items near you.</p>
+        </div>
+        <div class="step-card reveal d3" data-n="3">
+          <div class="step-icon">🛍</div>
+          <h3>Shop Deadstock</h3>
+          <p>Browse verified unsold stock from local shops and brands at heavily discounted prices in the Marketplace.</p>
+        </div>
+        <div class="step-card reveal d4" data-n="4">
+          <div class="step-icon">🌿</div>
+          <h3>Wear & Repeat</h3>
+          <p>Enjoy your new-to-you garment and list items you've outgrown — keeping fashion circular.</p>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:2rem">
+        <button class="btn-fire" onclick="showPage('how')">Learn More →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMUNITY TEASER -->
+  <section id="communityTeaser">
+    <div class="community-inner container">
+      <div class="reveal">
+        <div class="community-imgs">
+          <div class="comm-img" style="grid-column:1/-1"><img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=700&q=80" alt="Community" loading="lazy"/></div>
+          <div class="comm-img"><img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=350&q=80" alt="Fashion" loading="lazy"/></div>
+          <div class="comm-img"><img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=350&q=80" alt="Clothes" loading="lazy"/></div>
+        </div>
+      </div>
+      <div class="reveal d1">
+        <div class="sec-tag">Community</div>
+        <h2 class="sec-title">Join 1,200+ Fashion-Forward Eco Changemakers</h2>
+        <p class="sec-desc" style="margin-bottom:1.5rem">Our community spans 18 cities across India, united by the belief that great style and sustainability go hand in hand.</p>
+        <div class="comm-stat-row">
+          <div class="cstat"><div class="cstat-n">1.2K</div><div class="cstat-l">Members</div></div>
+          <div class="cstat"><div class="cstat-n">8.4K</div><div class="cstat-l">Items Bought</div></div>
+          <div class="cstat"><div class="cstat-n">18</div><div class="cstat-l">Cities</div></div>
+        </div>
+        <button class="btn-fire" onclick="showPage('community')">Meet the Community →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPACT -->
+  <section id="impactSection" class="section">
+    <div class="container">
+      <div class="reveal" style="text-align:center">
+        <div class="sec-tag">Our Impact</div>
+        <h2 class="sec-title">Together, We're Rewriting Fashion</h2>
+        <p class="sec-desc" style="margin:0 auto">Small swaps. Massive change.</p>
+      </div>
+      <div class="ctrs-grid reveal d1">
+        <div class="ctr"><div class="ctr-ic">👗</div><div class="ctr-num" id="c1" data-target="8423">0</div><div class="ctr-label">Clothes Saved</div><div class="ctr-sub">kept out of landfills</div></div>
+        <div class="ctr"><div class="ctr-ic">🌍</div><div class="ctr-num" id="c2" data-target="12600">0</div><div class="ctr-label">kg CO₂ Reduced</div><div class="ctr-sub">like planting 580 trees</div></div>
+        <div class="ctr"><div class="ctr-ic">💧</div><div class="ctr-num" id="c3" data-target="22740000">0</div><div class="ctr-label">Litres Water Saved</div><div class="ctr-sub">for 8,400 people/day</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-box reveal">
+        <div class="cta-dots"><div class="cdot"></div><div class="cdot"></div><div class="cdot"></div><div class="cdot"></div><div class="cdot"></div></div>
+        <h2>Fashion Doesn't Have<br/>to <em>Cost the Earth</em></h2>
+        <p>Start today. List an item. Shop verified deadstock at unbeatable prices.</p>
+        <div class="cta-btns">
+          <button class="btn-cta-w" onclick="showPage('marketplace')">🛍 Shop Marketplace</button>
+          <button class="btn-cta-g" onclick="showPage('provider')">🏪 Partner With Us</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="f-logo">Re<em>Wear</em></div>
+    <p>Made with 💚 for the Makeathon · Sustainable Clothing Exchange · 2025</p>
+    <div class="f-dots">
+      <div class="fdot" style="background:var(--saffron)"></div>
+      <div class="fdot" style="background:var(--indigo)"></div>
+      <div class="fdot" style="background:var(--teal)"></div>
+      <div class="fdot" style="background:var(--rust)"></div>
+    </div>
+  </footer>
+</div><!-- /homePage -->
+
+<!-- ════════════ BROWSE PAGE ════════════ -->
+<div id="browsePage" class="page">
+  <div class="browse-hero">
+    <div class="container">
+      <h1>Browse Clothing</h1>
+      <p>Discover pre-loved fashion across India — trending pieces, recent listings & swaps near you.</p>
+      <div class="browse-search-row">
+        <div class="bsearch">
+          <span class="bsearch-icon">🔍</span>
+          <input type="text" id="browseSearch" placeholder="Search items, brands, categories…" oninput="filterBrowse()"/>
+        </div>
+        <select class="bloc-sel" id="browseLoc" onchange="filterBrowse()">
+          <option value="">📍 All Cities</option>
+          <option>Delhi</option><option>Mumbai</option><option>Bangalore</option><option>Pune</option>
+          <option>Chennai</option><option>Hyderabad</option><option>Jaipur</option><option>Kolkata</option>
+          <option>Ahmedabad</option><option>Surat</option><option>Lucknow</option><option>Raipur</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="container" style="padding:2rem 2rem 4rem">
+    <!-- Category strip -->
+    <div class="cat-strip" id="catStrip">
+      <button class="cat-pill active" onclick="setBrowseCat(this,'')">All</button>
+      <button class="cat-pill cat-rust" onclick="setBrowseCat(this,'Tops')"><span>👕</span>Tops</button>
+      <button class="cat-pill cat-indigo" onclick="setBrowseCat(this,'Bottoms')"><span>👖</span>Bottoms</button>
+      <button class="cat-pill cat-teal" onclick="setBrowseCat(this,'Outerwear')"><span>🧥</span>Outerwear</button>
+      <button class="cat-pill cat-plum" onclick="setBrowseCat(this,'Dresses')"><span>👗</span>Dresses</button>
+      <button class="cat-pill" onclick="setBrowseCat(this,'Accessories')"><span>👜</span>Accessories</button>
+      <button class="cat-pill cat-olive" onclick="setBrowseCat(this,'Footwear')"><span>👟</span>Footwear</button>
+    </div>
+
+    <!-- TABS: Trending / Recently Added / Nearby Swaps -->
+    <div class="browse-tabs">
+      <button class="btab active" onclick="setBrowseTab(this,'trending')">🔥 Trending <span class="btab-badge">12</span></button>
+      <button class="btab" onclick="setBrowseTab(this,'recent')">🆕 Recently Added</button>
+      <button class="btab" onclick="setBrowseTab(this,'nearby')">📍 Nearby Swaps</button>
+      <button class="btab" onclick="setBrowseTab(this,'all')">All Items</button>
+    </div>
+
+    <!-- Subcat row (shown when a specific cat is selected) -->
+    <div class="subcat-row" id="subcatRow" style="display:none"></div>
+
+    <div class="results-count" id="browseCount" style="font-size:.8rem;color:var(--text3);margin-bottom:1rem"></div>
+    <div class="cards-grid" id="browseGrid"></div>
+  </div>
+</div><!-- /browsePage -->
+
+<!-- ════════════ CATEGORY DETAIL PAGE ════════════ -->
+<div id="catPage" class="page">
+  <div class="cat-hero" id="catHero">
+    <div class="cat-hero-bg" id="catHeroBg"></div>
+    <div class="container cat-hero-content">
+      <span class="cat-hero-emoji" id="catHeroEmoji"></span>
+      <h1 id="catHeroTitle"></h1>
+      <p id="catHeroDesc"></p>
+    </div>
+  </div>
+  <div class="container" style="padding:2rem 2rem 4rem">
+    <button class="back-btn" onclick="showPage('browse')">← Back to Browse</button>
+    <div class="subcat-row" id="catSubcatRow"></div>
+    <div class="browse-tabs" style="margin-bottom:1.5rem">
+      <button class="btab active" onclick="setCatTab(this,'all')">All</button>
+      <button class="btab" onclick="setCatTab(this,'swap')">🔄 Swap</button>
+      <button class="btab" onclick="setCatTab(this,'nearby')">📍 Near Me</button>
+    </div>
+    <div class="results-count" id="catCount" style="font-size:.8rem;color:var(--text3);margin-bottom:1rem"></div>
+    <div class="cards-grid" id="catGrid"></div>
+  </div>
+</div><!-- /catPage -->
+
+<!-- ════════════ HOW IT WORKS PAGE ════════════ -->
+<div id="howPage" class="page">
+  <div class="how-full-hero">
+    <div class="container">
+      <h1>How ReWear Works</h1>
+      <p>Everything you need to know about swapping, donating, and building a more sustainable wardrobe.</p>
+    </div>
+  </div>
+  <div class="section container">
+    <div class="steps-full">
+      <div class="step-full" data-n="1"><div class="step-full-icon">📸</div><h3>List Your Item</h3><p>Upload clear photos and add a description — size, brand, material, condition. The better your listing, the faster it finds a new home through the community.</p></div>
+      <div class="step-full" data-n="2"><div class="step-full-icon">🔍</div><h3>Discover & Browse</h3><p>Use our powerful search to find items by category, city, or keyword. Filter by Trending, Recently Added, or Nearby items to find exactly what you're looking for.</p></div>
+      <div class="step-full" data-n="3"><div class="step-full-icon">🤝</div><h3>Connect & Agree</h3><p>Send a request or contact the lister. The other person gets notified and you agree on a pickup point or arrange a safe postal delivery.</p></div>
+      <div class="step-full" data-n="4"><div class="step-full-icon">📦</div><h3>Receive Safely</h3><p>Meet in a public place or use a trusted courier. Inspect the item before finalising the purchase. Both parties confirm in the app.</p></div>
+      <div class="step-full" data-n="5"><div class="step-full-icon">⭐</div><h3>Rate & Review</h3><p>Leave a review for your seller. Build trust in the community and earn sustainability badges as you complete more purchases.</p></div>
+      <div class="step-full" data-n="6"><div class="step-full-icon">🌿</div><h3>Wear & Repeat</h3><p>Enjoy your new-to-you garment! When you've outgrown it, list it again. Keep the loop going and watch your positive impact grow.</p></div>
+    </div>
+    <div class="faq-section">
+      <div class="sec-tag" style="margin-bottom:1rem">FAQ</div>
+      <h2 class="sec-title" style="margin-bottom:1.5rem">Common Questions</h2>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Is ReWear free to use? <span>+</span></div><div class="faq-a">Yes! Listing and exchanging items on ReWear is completely free for the community. The Marketplace features discounted items from verified providers at accessible prices.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Does ReWear give verified products? <span>+</span></div><div class="faq-a">Yes! Our team verifies every product as soon as the customer buys it online. We ensure condition accuracy, authenticity, and quality before the item is dispatched to the buyer.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">What condition should items be in? <span>+</span></div><div class="faq-a">We accept items in Like New, Good, or Fair condition. No torn, heavily stained, or unwearable items please. Be honest in your listing — the community trusts each other!</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">How does the Marketplace work for buyers? <span>+</span></div><div class="faq-a">The Marketplace features verified deadstock and unsold clothing from local shops, boutiques and brands at discounted prices. All items are verified by the ReWear team before listing.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">What cities is ReWear available in? <span>+</span></div><div class="faq-a">We're currently active in Delhi, Mumbai, Bangalore, Pune, Chennai, Hyderabad, Jaipur, Kolkata, Ahmedabad, Surat, Lucknow, Raipur, and expanding fast!</div></div>
+    </div>
+  </div>
+</div><!-- /howPage -->
+
+<!-- ════════════ COMMUNITY PAGE ════════════ -->
+<div id="communityPage" class="page">
+  <div class="comm-hero">
+    <div class="container">
+      <h1>Our Community</h1>
+      <p>Meet the changemakers building a sustainable fashion future — one purchase at a time.</p>
+    </div>
+  </div>
+  <div class="section container">
+    <div class="sec-tag">Top Members</div>
+    <h2 class="sec-title" style="margin-bottom:1.8rem">Sustainability Champions</h2>
+    <div class="members-grid" id="membersGrid"></div>
+    <div style="margin-top:3.5rem">
+      <div class="sec-tag">Activity</div>
+      <h2 class="sec-title" style="margin-bottom:1.5rem">Recent Community Activity</h2>
+      <div class="activity-feed" id="activityFeed"></div>
+    </div>
+  </div>
+</div><!-- /communityPage -->
+
+<!-- ════════════ UPLOAD PAGE ════════════ -->
+<div id="uploadPage" class="page">
+  <div class="upload-hero">
+    <div class="container">
+      <h1>List Your Item</h1>
+      <p>Give your clothing a second life. Listing takes under 2 minutes.</p>
+    </div>
+  </div>
+  <div class="section container">
+    <div class="upload-grid">
+      <div>
+        <div class="sec-tag">Tips</div>
+        <h2 class="sec-title" style="margin-bottom:1.2rem">Listing Tips</h2>
+        <div class="tips-box">
+          <div class="tip-row"><div class="tip-ic" style="background:rgba(232,135,42,.1)">📸</div>Upload 3+ clear photos in natural light</div>
+          <div class="tip-row"><div class="tip-ic" style="background:rgba(58,79,140,.1)">✍️</div>Include brand, material, size and condition</div>
+          <div class="tip-row"><div class="tip-ic" style="background:rgba(107,124,53,.1)">🌿</div>Even fair-condition items find loving homes</div>
+          <div class="tip-row"><div class="tip-ic" style="background:rgba(42,123,123,.1)">📍</div>Set your city to connect with local swappers</div>
+          <div class="tip-row"><div class="tip-ic" style="background:rgba(124,45,58,.1)">🤝</div>Respond quickly to swap requests</div>
+        </div>
+      </div>
+      <div class="form-box">
+        <div class="dz" id="dropZone" onclick="document.getElementById('fileIn').click()">
+          <div class="dz-ic">🎨</div>
+          <p><strong>Click to upload</strong> or drag &amp; drop a photo</p>
+          <p><small>PNG / JPG up to 5MB</small></p>
+          <input type="file" id="fileIn" accept="image/*" style="display:none" onchange="handleFile(this)"/>
+        </div>
+        <div class="fgrid">
+          <div class="fg"><label>Item Name</label><input type="text" id="iName" placeholder="e.g. Indigo Linen Jacket"/></div>
+          <div class="fg"><label>Category</label><select id="iCat"><option>Tops</option><option>Bottoms</option><option>Outerwear</option><option>Dresses</option><option>Accessories</option><option>Footwear</option></select></div>
+          <div class="fg"><label>Size</label><select id="iSize"><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option><option>One Size</option><option>UK 5</option><option>UK 6</option><option>UK 7</option><option>UK 8</option><option>UK 9</option><option>UK 10</option></select></div>
+          <div class="fg"><label>Condition</label><select id="iCond"><option>Like New</option><option>Good</option><option>Fair</option></select></div>
+          <div class="fg"><label>Listing Type</label><select id="iType"><option>Swap</option></select></div>
+          <div class="fg"><label>City</label><select id="iLoc"><option>Raipur</option><option>Delhi</option><option>Mumbai</option><option>Bangalore</option><option>Pune</option><option>Chennai</option><option>Hyderabad</option><option>Jaipur</option><option>Kolkata</option><option>Ahmedabad</option><option>Surat</option><option>Lucknow</option></select></div>
+          <div class="fg full"><label>Description</label><textarea id="iDesc" placeholder="Brand, material, reason for listing…"></textarea></div>
+        </div>
+        <button class="btn-submit-up" onclick="doUpload()">🌿 List My Clothing Item</button>
+        <div class="toast" id="toast">✅ Your item has been listed! The community will find it a new home 🌍</div>
+      </div>
+    </div>
+  </div>
+</div><!-- /uploadPage -->
+
+<!-- ════════════ PROVIDER PARTNERSHIP PAGE ════════════ -->
+<div id="providerPage" class="page">
+  <div class="provider-hero">
+    <div class="container">
+      <div class="provider-hero-badge">🏪 For Businesses</div>
+      <h1>Turn Dead Stock Into<br/>Real Revenue</h1>
+      <p>ReWear connects local shops, boutiques, warehouses and brands with conscious buyers across India. List your unsold inventory — we verify, list, and sell it for you.</p>
+    </div>
+  </div>
+
+  <!-- Stats strip -->
+  <div class="prov-stats-strip">
+    <div class="pstat"><div class="pstat-n">₹2.1Cr+</div><div class="pstat-l">Dead stock cleared</div></div>
+    <div class="pstat"><div class="pstat-n">340+</div><div class="pstat-l">Provider partners</div></div>
+    <div class="pstat"><div class="pstat-n">24hrs</div><div class="pstat-l">Avg. verification time</div></div>
+    <div class="pstat"><div class="pstat-n">18+</div><div class="pstat-l">Cities active</div></div>
+  </div>
+
+  <!-- Registration form + why section -->
+  <div class="section container">
+    <div class="provider-grid">
+      <!-- Left: why partner -->
+      <div>
+        <div class="sec-tag reveal">Why Partner With ReWear</div>
+        <h2 class="sec-title reveal d1">Stop Burning Unsold Stock.<br/>Start Earning.</h2>
+        <p class="sec-desc reveal d2" style="margin-bottom:1.5rem">Unsold clothing isn't a loss — it's an opportunity. ReWear gives your deadstock a verified, trusted channel to reach buyers who want it.</p>
+        <div class="prov-why">
+          <div class="prov-why-card reveal d1">
+            <div class="pwy-ic" style="background:rgba(232,135,42,.1)">✅</div>
+            <div><div class="pwy-title">Verified Listings</div><div class="pwy-desc">Our team checks every item before it goes live, so buyers trust what they see — and trust you.</div></div>
+          </div>
+          <div class="prov-why-card reveal d2">
+            <div class="pwy-ic" style="background:rgba(58,79,140,.1)">🚚</div>
+            <div><div class="pwy-title">Pickup or Ship</div><div class="pwy-desc">Choose between pickup from your store or direct shipping. We accommodate both models.</div></div>
+          </div>
+          <div class="prov-why-card reveal d3">
+            <div class="pwy-ic" style="background:rgba(42,123,123,.1)">📊</div>
+            <div><div class="pwy-title">Real-Time Dashboard</div><div class="pwy-desc">Track views, sales, and revenue for every listed item. Full transparency, zero guesswork.</div></div>
+          </div>
+          <div class="prov-why-card reveal d4">
+            <div class="pwy-ic" style="background:rgba(107,124,53,.1)">🌿</div>
+            <div><div class="pwy-title">Sustainability Credit</div><div class="pwy-desc">Get a certified sustainability badge for your brand. Buyers love businesses that care about the planet.</div></div>
+          </div>
+          <div class="prov-why-card reveal">
+            <div class="pwy-ic" style="background:rgba(124,45,58,.1)">💰</div>
+            <div><div class="pwy-title">You Set the Price</div><div class="pwy-desc">Set your original and discount price. ReWear takes a small commission only on successful sales — no upfront fees.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: registration form -->
+      <div class="prov-form-box reveal d1">
+        <h3>Register as a Provider</h3>
+        <p>Fill in the form below and our team will reach out within 24 hours to verify and onboard you.</p>
+        <div class="pdz" id="provDropZone" onclick="document.getElementById('provFileIn').click()">
+          <div class="pdz-ic">📦</div>
+          <p><strong>Upload product images</strong> or drag &amp; drop</p>
+          <p><small>PNG / JPG, up to 10MB per image</small></p>
+          <input type="file" id="provFileIn" accept="image/*" multiple style="display:none" onchange="handleProvFile(this)"/>
+        </div>
+        <div class="pfgrid">
+          <div class="pfg"><label>Provider / Contact Name</label><input type="text" id="pName" placeholder="e.g. Rajesh Sharma"/></div>
+          <div class="pfg"><label>Shop / Brand Name</label><input type="text" id="pBrand" placeholder="e.g. FabWeave Boutique"/></div>
+          <div class="pfg"><label>Location / City</label><select id="pLoc"><option>Raipur</option><option>Delhi</option><option>Mumbai</option><option>Bangalore</option><option>Pune</option><option>Chennai</option><option>Hyderabad</option><option>Jaipur</option><option>Kolkata</option><option>Ahmedabad</option><option>Surat</option><option>Lucknow</option><option>Other</option></select></div>
+          <div class="pfg"><label>Contact Email</label><input type="email" id="pEmail" placeholder="you@yourbrand.com"/></div>
+          <div class="pfg"><label>Product Category</label><select id="pCat"><option>Tops</option><option>Bottoms</option><option>Dresses</option><option>Outerwear</option><option>Footwear</option><option>Accessories</option><option>Mixed / Multiple</option></select></div>
+          <div class="pfg"><label>Quantity of Items</label><input type="number" id="pQty" placeholder="e.g. 120" min="1"/></div>
+          <div class="pfg"><label>Item Condition</label><select id="pCond"><option>New (Unsold)</option><option>Slight Defect</option><option>Open Box / Display</option></select></div>
+          <div class="pfg"><label>Fulfillment Option</label><select id="pFulfill"><option>Pickup from Store</option><option>We Ship to Buyer</option><option>Both Available</option></select></div>
+          <div class="pfg full price-row">
+            <div class="pfg"><label>Original MRP (₹)</label><input type="number" id="pOrigPrice" placeholder="e.g. 1499"/></div>
+            <div class="pfg"><label>Discount Price (₹)</label><input type="number" id="pDiscPrice" placeholder="e.g. 599"/></div>
+          </div>
+          <div class="pfg full"><label>Additional Notes</label><textarea id="pNotes" placeholder="Tell us about your inventory — fabric, brand, reason for deadstock…"></textarea></div>
+        </div>
+        <button class="prov-submit-btn" onclick="doProviderSubmit()">🏪 Submit Partnership Request</button>
+        <div class="prov-toast" id="provToast">✅ Request submitted! Our team will contact you within 24 hours to begin verification.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERIFICATION PROCESS -->
+  <div class="verify-section">
+    <div class="container">
+      <div class="reveal" style="text-align:center">
+        <div class="sec-tag">Our Process</div>
+        <h2 class="sec-title">How Verification Works</h2>
+        <p class="sec-desc" style="margin:0 auto">Every item on the ReWear Marketplace is verified by our team before going live — ensuring quality and trust for every buyer.</p>
+      </div>
+      <div class="verify-pipeline" style="margin-top:3rem">
+        <div class="vstep reveal d1">
+          <div class="vstep-n">1</div>
+          <div class="vstep-ic">📋</div>
+          <h4>Provider Submits</h4>
+          <p>You fill out the registration form with product details, images, pricing, and fulfillment preference.</p>
+        </div>
+        <div class="varrow reveal">→</div>
+        <div class="vstep reveal d2">
+          <div class="vstep-n">2</div>
+          <div class="vstep-ic">🔍</div>
+          <h4>ReWear Verifies</h4>
+          <p>Our team reviews images, checks condition accuracy, and confirms the pricing and brand details within 24 hours.</p>
+        </div>
+        <div class="varrow reveal">→</div>
+        <div class="vstep reveal d3">
+          <div class="vstep-n">3</div>
+          <div class="vstep-ic">🛍</div>
+          <h4>Product Listed</h4>
+          <p>Verified items are published on the ReWear Marketplace with a "Verified Provider" badge for buyer confidence.</p>
+        </div>
+        <div class="varrow reveal">→</div>
+        <div class="vstep reveal d4">
+          <div class="vstep-n">4</div>
+          <div class="vstep-ic">💳</div>
+          <h4>Customer Buys</h4>
+          <p>Buyers browse, buy, and receive their order. You get paid directly — minus our small platform commission.</p>
+        </div>
+      </div>
+      <div class="verify-trust reveal d1" style="margin-top:3.5rem">
+        <div class="vtrust">
+          <div class="vtrust-ic">🔒</div>
+          <h5>Secure Payouts</h5>
+          <p>Payments are processed securely and transferred to you within 3-5 business days of confirmed delivery.</p>
+        </div>
+        <div class="vtrust">
+          <div class="vtrust-ic">📸</div>
+          <h5>Quality Photography</h5>
+          <p>Our team can assist with professional product photography to maximise your listing's conversion rate.</p>
+        </div>
+        <div class="vtrust">
+          <div class="vtrust-ic">🤝</div>
+          <h5>Dedicated Support</h5>
+          <p>Every partner gets a dedicated ReWear account manager to help manage listings and resolve any issues quickly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="f-logo">Re<em>Wear</em></div>
+    <p>Made with 💚 for the Makeathon · Sustainable Clothing Exchange · 2025</p>
+    <div class="f-dots">
+      <div class="fdot" style="background:var(--saffron)"></div>
+      <div class="fdot" style="background:var(--indigo)"></div>
+      <div class="fdot" style="background:var(--teal)"></div>
+      <div class="fdot" style="background:var(--rust)"></div>
+    </div>
+  </footer>
+</div><!-- /providerPage -->
+
+<!-- ════════════ MARKETPLACE PAGE ════════════ -->
+<div id="marketplacePage" class="page">
+  <div class="mkt-hero">
+    <div class="container">
+      <h1>🛍 ReWear Marketplace</h1>
+      <p>Shop deeply discounted, verified deadstock and unsold clothing from local shops, boutiques, and brands across India — good for you, great for the planet.</p>
+      <div class="mkt-search-row">
+        <div class="bsearch">
+          <span class="bsearch-icon">🔍</span>
+          <input type="text" id="mktSearch" placeholder="Search products, brands, categories…" oninput="filterMarketplace()"/>
+        </div>
+        <select class="bloc-sel" id="mktCatFilter" onchange="filterMarketplace()">
+          <option value="">All Categories</option>
+          <option>Tops</option><option>Bottoms</option><option>Dresses</option><option>Outerwear</option><option>Footwear</option><option>Accessories</option>
+        </select>
+        <select class="bloc-sel" id="mktCondFilter" onchange="filterMarketplace()">
+          <option value="">All Conditions</option>
+          <option>New (Unsold)</option><option>Slight Defect</option>
+        </select>
+      </div>
+      <div class="mkt-filter-row">
+        <button class="mkt-filter-chip active" onclick="setMktSort(this,'discount')">🔥 Biggest Discount</button>
+        <button class="mkt-filter-chip" onclick="setMktSort(this,'price_asc')">💰 Price: Low to High</button>
+        <button class="mkt-filter-chip" onclick="setMktSort(this,'price_desc')">💎 Price: High to Low</button>
+        <button class="mkt-filter-chip" onclick="setMktSort(this,'new')">🆕 Newest</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="padding:2rem 2rem 5rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:.6rem">
+      <div id="mktCount" style="font-size:.82rem;color:var(--text3)"></div>
+      <button class="btn-fire" style="font-size:.78rem;padding:.5rem 1.2rem" onclick="showPage('provider')">🏪 Are you a provider? Partner with us →</button>
+    </div>
+    <div class="mkt-grid" id="mktGrid"></div>
+  </div>
+</div><!-- /marketplacePage -->
+
+
+<div class="modal-ov" id="loginModal">
+  <div class="modal-box">
+    <button class="modal-close-x" onclick="closeLogin()">✕</button>
+    <h2>Welcome to ReWear</h2>
+    <div class="modal-tabs">
+      <button class="mtab active" onclick="switchMTab(this,'loginForm')">Login</button>
+      <button class="mtab" onclick="switchMTab(this,'signupForm')">Sign Up</button>
+    </div>
+    <div class="modal-form active" id="loginForm">
+      <div class="mfg"><label>Email</label><input type="email" placeholder="you@example.com"/></div>
+      <div class="mfg"><label>Password</label><input type="password" placeholder="••••••••"/></div>
+      <button class="btn-modal-submit" onclick="doLogin()">Login</button>
+      <div class="modal-or">or</div>
+      <button class="btn-modal-submit" style="background:var(--indigo)">Continue with Google</button>
+    </div>
+    <div class="modal-form" id="signupForm">
+      <div class="mfg"><label>Name</label><input type="text" placeholder="Your name"/></div>
+      <div class="mfg"><label>Email</label><input type="email" placeholder="you@example.com"/></div>
+      <div class="mfg"><label>Password</label><input type="password" placeholder="Create a password"/></div>
+      <button class="btn-modal-submit" onclick="doLogin()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACTION MODAL -->
+<div class="modal-ov" id="actionModal">
+  <div class="confirm-modal">
+    <div class="conf-icon" id="confIcon"></div>
+    <h3 id="confTitle">Done!</h3>
+    <p id="confBody">Your request has been sent.</p>
+    <button class="btn-conf" onclick="closeActionModal()">Close</button>
+  </div>
+</div>
+
+<script>
+/* ══ CURSOR ══ */
+const curEl=document.getElementById('cur'),curREl=document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;curEl.style.left=mx+'px';curEl.style.top=my+'px';});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curREl.style.left=rx+'px';curREl.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.addEventListener('mouseover',e=>{
+  const h=e.target.closest('button,a,.item-card,.cat-swatch,.step-card,.ctr,.member-card,.mkt-card,.prov-why-card,.vstep');
+  curEl.style.transform=h?'translate(-50%,-50%) scale(2.2)':'translate(-50%,-50%) scale(1)';
+  curREl.style.width=h?'50px':'30px';curREl.style.height=h?'50px':'30px';
+});
+
+/* ══ DARK MODE ══ */
+function toggleDark(){
+  const d=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',d?'light':'dark');
+  document.getElementById('darkBtn').textContent=d?'🌙':'☀️';
+}
+
+/* ══ PAGE ROUTING ══ */
+let currentPage='home';
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(page+'Page').classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    a.classList.toggle('nav-active',a.dataset.page===page);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+  currentPage=page;
+  if(page==='browse'){filterBrowse();}
+  if(page==='community'){renderCommunity();}
+  if(page==='home'){setTimeout(initCounters,400);}
+  if(page==='marketplace'){filterMarketplace();}
+}
+
+/* ══ DATA ══ */
+// Rich item dataset with real Unsplash images
+const ITEMS=[
+  // FOOTWEAR – Sneakers
+  {id:1,name:'Nike Air Force 1 White',cat:'Footwear',subcat:'Sneakers',size:'UK 8',cond:'Like New',owner:'Arjun K.',loc:'Bangalore',nearby:false,trending:true,img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80',emoji:'👟',orig:7999,price:2499},
+  {id:2,name:'Adidas Stan Smith Green',cat:'Footwear',subcat:'Sneakers',size:'UK 7',cond:'Good',owner:'Dev R.',loc:'Hyderabad',nearby:false,trending:true,img:'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500&q=80',emoji:'👟',orig:6499,price:1999},
+  {id:3,name:'Converse Chuck Taylor Hi',cat:'Footwear',subcat:'Sneakers',size:'UK 6',cond:'Good',owner:'Pooja S.',loc:'Mumbai',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=500&q=80',emoji:'👟',orig:4999,price:1299},
+  {id:4,name:'Puma Suede Classic Black',cat:'Footwear',subcat:'Sneakers',size:'UK 9',cond:'Fair',owner:'Rahul M.',loc:'Delhi',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500&q=80',emoji:'👟',orig:5499,price:999},
+  // FOOTWEAR – Heels
+  {id:5,name:'Block Heel Nude Sandals',cat:'Footwear',subcat:'Heels',size:'UK 5',cond:'Like New',owner:'Priya M.',loc:'Delhi',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1518894781321-630e638d0742?w=500&q=80',emoji:'👠',orig:3499,price:899},
+  {id:6,name:'Strappy Stiletto Heels',cat:'Footwear',subcat:'Heels',size:'UK 6',cond:'Good',owner:'Kavya R.',loc:'Raipur',nearby:true,trending:false,img:'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500&q=80',emoji:'👠',orig:2999,price:749},
+  // FOOTWEAR – Boots
+  {id:7,name:'Suede Ankle Boots Brown',cat:'Footwear',subcat:'Boots',size:'UK 7',cond:'Good',owner:'Nisha R.',loc:'Pune',nearby:false,trending:true,img:'https://images.unsplash.com/photo-1605812860427-4024433a70fd?w=500&q=80',emoji:'👢',orig:5999,price:1799},
+  {id:8,name:'Chelsea Boots Black',cat:'Footwear',subcat:'Boots',size:'UK 8',cond:'Like New',owner:'Karan M.',loc:'Ahmedabad',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1638247025967-b4e38f787b76?w=500&q=80',emoji:'👢',orig:6499,price:1999},
+  // FOOTWEAR – Flats
+  {id:9,name:'Leather Pointed Flats',cat:'Footwear',subcat:'Flats',size:'UK 5',cond:'Like New',owner:'Sara T.',loc:'Chennai',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1476216135946-81e7de2be1fe?w=500&q=80',emoji:'🥿',orig:2499,price:649},
+  // ACCESSORIES – Clutches
+  {id:10,name:'Gold Satin Evening Clutch',cat:'Accessories',subcat:'Clutches',size:'One Size',cond:'Like New',owner:'Meera P.',loc:'Chennai',nearby:false,trending:true,img:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&q=80',emoji:'👛',orig:1899,price:549},
+  {id:11,name:'Silver Embellished Clutch',cat:'Accessories',subcat:'Clutches',size:'One Size',cond:'Good',owner:'Renu B.',loc:'Raipur',nearby:true,trending:false,img:'https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=500&q=80',emoji:'👛',orig:1499,price:399},
+  {id:12,name:'Velvet Burgundy Clutch',cat:'Accessories',subcat:'Clutches',size:'One Size',cond:'Like New',owner:'Divya N.',loc:'Lucknow',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=500&q=80',emoji:'👛',orig:1699,price:499},
+  // ACCESSORIES – Bags
+  {id:13,name:'Black Leather Tote Bag',cat:'Accessories',subcat:'Bags',size:'One Size',cond:'Good',owner:'Ananya V.',loc:'Jaipur',nearby:false,trending:true,img:'https://images.unsplash.com/photo-1491637639811-60e2756cc1c7?w=500&q=80',emoji:'👜',orig:3499,price:999},
+  {id:14,name:'Canvas Backpack Beige',cat:'Accessories',subcat:'Bags',size:'One Size',cond:'Fair',owner:'Lata K.',loc:'Jaipur',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80',emoji:'🎒',orig:1999,price:499},
+  {id:15,name:'Crochet Boho Shoulder Bag',cat:'Accessories',subcat:'Bags',size:'One Size',cond:'Good',owner:'Sonali P.',loc:'Pune',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500&q=80',emoji:'👜',orig:2299,price:649},
+  // DRESSES
+  {id:16,name:'Floral Silk Wrap Dress',cat:'Dresses',subcat:'Midi',size:'S',cond:'Like New',owner:'Priya M.',loc:'Delhi',nearby:false,trending:true,img:'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&q=80',emoji:'👗',orig:3999,price:1099},
+  {id:17,name:'Block Print Cotton Dress',cat:'Dresses',subcat:'Casual',size:'M',cond:'Good',owner:'Nisha R.',loc:'Surat',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500&q=80',emoji:'👗',orig:2499,price:699},
+  {id:18,name:'Rust Maxi Dress',cat:'Dresses',subcat:'Maxi',size:'S',cond:'Good',owner:'Riya D.',loc:'Kolkata',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=500&q=80',emoji:'👗',orig:3299,price:899},
+  {id:19,name:'Black Formal Shift Dress',cat:'Dresses',subcat:'Formal',size:'M',cond:'Like New',owner:'Sara T.',loc:'Mumbai',nearby:false,trending:true,img:'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=500&q=80',emoji:'👗',orig:4499,price:1299},
+  {id:20,name:'Boho Floral Sundress',cat:'Dresses',subcat:'Casual',size:'XS',cond:'Good',owner:'Kavya R.',loc:'Raipur',nearby:true,trending:false,img:'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500&q=80',emoji:'👗',orig:2199,price:599},
+  {id:21,name:'Emerald Green Midi Dress',cat:'Dresses',subcat:'Midi',size:'M',cond:'Like New',owner:'Meera P.',loc:'Chennai',nearby:false,trending:true,img:'https://images.unsplash.com/photo-1605763240000-7e93b172d754?w=500&q=80',emoji:'👗',orig:3799,price:1099},
+  // TOPS
+  {id:22,name:'Handloom Saree Top',cat:'Tops',subcat:'Ethnic',size:'M',cond:'Like New',owner:'Kavya R.',loc:'Raipur',nearby:true,trending:false,img:'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=500&q=80',emoji:'👕',orig:1999,price:549},
+  {id:23,name:'Indigo Knit Hoodie',cat:'Tops',subcat:'Casual',size:'L',cond:'Good',owner:'Arjun K.',loc:'Bangalore',nearby:false,trending:true,img:'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=500&q=80',emoji:'🧥',orig:2499,price:699},
+  {id:24,name:'White Linen Shirt',cat:'Tops',subcat:'Formal',size:'XL',cond:'Good',owner:'Farhan K.',loc:'Hyderabad',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=500&q=80',emoji:'👔',orig:1799,price:499},
+  {id:25,name:'Block Print Kurti Blue',cat:'Tops',subcat:'Ethnic',size:'XS',cond:'Like New',owner:'Lata K.',loc:'Jaipur',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=500&q=80',emoji:'👕',orig:1499,price:449},
+  // BOTTOMS
+  {id:26,name:'High-Waist Linen Pants',cat:'Bottoms',subcat:'Trousers',size:'M',cond:'Good',owner:'Sara T.',loc:'Mumbai',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1594938298603-c8148c4b4237?w=500&q=80',emoji:'👖',orig:2199,price:599},
+  {id:27,name:'Cotton Kurta Pyjama',cat:'Bottoms',subcat:'Ethnic',size:'L',cond:'Good',owner:'Suresh G.',loc:'Raipur',nearby:true,trending:false,img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&q=80',emoji:'👖',orig:1699,price:449},
+  {id:28,name:'Terracotta Midi Skirt',cat:'Bottoms',subcat:'Skirts',size:'S',cond:'Good',owner:'Riya D.',loc:'Kolkata',nearby:false,trending:true,img:'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=500&q=80',emoji:'👗',orig:1999,price:549},
+  // OUTERWEAR
+  {id:29,name:'Caramel Wool Blazer',cat:'Outerwear',subcat:'Blazers',size:'M',cond:'Like New',owner:'Rahul S.',loc:'Pune',nearby:false,trending:true,img:'https://images.unsplash.com/photo-1594938374182-a57b477a4e7b?w=500&q=80',emoji:'🧥',orig:5499,price:1499},
+  {id:30,name:'Raw Denim Jacket',cat:'Outerwear',subcat:'Jackets',size:'L',cond:'Good',owner:'Karan M.',loc:'Ahmedabad',nearby:false,trending:false,img:'https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=500&q=80',emoji:'🧥',orig:3999,price:999},
+  {id:31,name:'Vintage Leather Jacket',cat:'Outerwear',subcat:'Jackets',size:'M',cond:'Fair',owner:'Preethi M.',loc:'Bangalore',nearby:false,trending:true,img:'https://images.unsplash.com/photo-1559551409-dadc959f76b8?w=500&q=80',emoji:'🧥',orig:6999,price:1799},
+];
+
+const SUBCATS={
+  Footwear:['All','Sneakers','Heels','Boots','Flats'],
+  Accessories:['All','Clutches','Bags'],
+  Dresses:['All','Midi','Maxi','Casual','Formal'],
+  Tops:['All','Casual','Formal','Ethnic'],
+  Bottoms:['All','Trousers','Skirts','Ethnic'],
+  Outerwear:['All','Blazers','Jackets'],
+};
+const CAT_IMGS={
+  Footwear:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&q=80',
+  Accessories:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200&q=80',
+  Dresses:'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=1200&q=80',
+  Tops:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=1200&q=80',
+  Bottoms:'https://images.unsplash.com/photo-1594938298603-c8148c4b4237?w=1200&q=80',
+  Outerwear:'https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=1200&q=80',
+};
+const CAT_EMOJI={'Footwear':'👟','Accessories':'👜','Dresses':'👗','Tops':'👕','Bottoms':'👖','Outerwear':'🧥'};
+const CAT_DESC={
+  Footwear:'Sneakers, heels, boots, flats and more — pre-loved shoes looking for new feet.',
+  Accessories:'Bags, clutches, jewellery and accessories to complete any look.',
+  Dresses:'Maxis, midis, casuals and formals — every dress tells a story.',
+  Tops:'Kurtas, hoodies, shirts and blouses for every occasion.',
+  Bottoms:'Trousers, skirts, palazzos and ethnic bottoms.',
+  Outerwear:'Blazers, jackets and coats for layering in style.',
+};
+
+const savedSet=new Set();
+let browseCat='',browseTab='trending',browseSubcat='';
+let catPageCat='',catPageTab='all',catPageSubcat='';
+
+function condChip(c){return c==='Like New'?'chip-ln':c==='Good'?'chip-gd':'chip-fr';}
+function makeCard(item,idx){
+  const isSaved=savedSet.has(item.id);
+  const saving=item.orig-item.price;
+  const pct=Math.round((1-item.price/item.orig)*100);
+  return `<div class="item-card">
+    <div class="ic-img">
+      <img src="${item.img}" alt="${item.name}" loading="lazy" data-emoji="${item.emoji||'👕'}" onerror="this.style.display='none';this.parentElement.style.display='flex';this.parentElement.style.alignItems='center';this.parentElement.style.justifyContent='center';this.parentElement.style.fontSize='4.5rem';this.parentElement.style.background='linear-gradient(145deg,rgba(232,135,42,.25),rgba(185,79,44,.35))';this.parentElement.insertAdjacentHTML('beforeend','<span style=\\'font-size:4rem;\\'>'+this.dataset.emoji+'</span>')"/>
+      ${item.trending?'<div class="trending-badge">🔥 Trending</div>':''}
+      <div class="mkt-disc-ribbon" style="position:absolute;bottom:.65rem;left:.65rem;background:linear-gradient(135deg,var(--saffron),var(--rust));color:#fff;padding:.22rem .7rem;border-radius:50px;font-size:.65rem;font-weight:800;letter-spacing:.3px">${pct}% OFF</div>
+      <button class="ic-wish ${isSaved?'saved':''}" onclick="toggleSave(event,${item.id})">${isSaved?'❤️':'🤍'}</button>
+      ${item.nearby?'<div class="ic-nearby">📍 Near You</div>':''}
+    </div>
+    <div class="ic-body">
+      <div class="ic-title" title="${item.name}">${item.name}</div>
+      <div class="ic-meta">📍 ${item.loc} &nbsp;·&nbsp; ${item.owner}</div>
+      <div class="ic-chips">
+        <span class="chip chip-sz">Size ${item.size}</span>
+        <span class="chip ${condChip(item.cond)}">${item.cond}</span>
+        <span class="chip chip-cat">${item.subcat||item.cat}</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:.5rem;margin-bottom:.85rem">
+        <span style="text-decoration:line-through;font-size:.78rem;color:var(--text3)">₹${item.orig.toLocaleString()}</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--saffron);line-height:1">₹${item.price.toLocaleString()}</span>
+        <span style="font-size:.68rem;font-weight:700;color:var(--olive);background:rgba(107,124,53,.12);padding:.12rem .45rem;border-radius:50px">Save ₹${saving.toLocaleString()}</span>
+      </div>
+      <div class="ic-actions">
+        <button class="btn-ic btn-swap-ic" onclick="openAction('buy','${item.name.replace(/'/g,'\\\'')}')" >🛍 Buy Now</button>
+        <button class="btn-bk" onclick="toggleSave(event,${item.id})" title="Save">🔖</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderGrid(containerId,list,countId){
+  const g=document.getElementById(containerId);
+  const c=document.getElementById(countId);
+  if(!list.length){
+    g.innerHTML='<div class="no-res"><div style="font-size:2.5rem">🔍</div><p>No items match your filters. Try adjusting your search!</p></div>';
+    if(c)c.textContent='';return;
+  }
+  if(c)c.textContent=`Showing ${list.length} item${list.length!==1?'s':''}`;
+  g.innerHTML=list.map((item,i)=>makeCard(item,i)).join('');
+}
+
+/* BROWSE FILTERING */
+function filterBrowse(){
+  const q=(document.getElementById('browseSearch')?.value||'').toLowerCase();
+  const loc=document.getElementById('browseLoc')?.value||'';
+  let list=ITEMS.filter(i=>{
+    if(browseCat&&i.cat!==browseCat)return false;
+    if(browseSubcat&&browseSubcat!=='All'&&i.subcat!==browseSubcat)return false;
+    if(loc&&i.loc!==loc)return false;
+    if(q&&!(i.name.toLowerCase().includes(q)||i.cat.toLowerCase().includes(q)||i.subcat?.toLowerCase().includes(q)||i.loc.toLowerCase().includes(q)||i.owner.toLowerCase().includes(q)))return false;
+    if(browseTab==='trending')return i.trending;
+    if(browseTab==='nearby')return i.nearby;
+    if(browseTab==='recent')return i.id>15;// simulate recent
+    return true;
+  });
+  renderGrid('browseGrid',list,'browseCount');
+  // subcats
+  const sr=document.getElementById('subcatRow');
+  if(browseCat&&SUBCATS[browseCat]){
+    sr.style.display='flex';
+    sr.innerHTML=SUBCATS[browseCat].map(s=>`<button class="subcat-chip${browseSubcat===s||(!browseSubcat&&s==='All')?' active':''}" onclick="setBrowseSubcat('${s}')">${s}</button>`).join('');
+  } else {sr.style.display='none';}
+}
+function setBrowseCat(btn,cat){
+  document.querySelectorAll('#catStrip .cat-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');browseCat=cat;browseSubcat='';filterBrowse();
+}
+function setBrowseSubcat(s){browseSubcat=s==='All'?'':s;filterBrowse();}
+function setBrowseTab(btn,tab){
+  document.querySelectorAll('.browse-tabs .btab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');browseTab=tab;filterBrowse();
+}
+
+/* CATEGORY DETAIL PAGE */
+function openCategory(cat){
+  catPageCat=cat;catPageTab='all';catPageSubcat='';
+  // Set hero
+  document.getElementById('catHeroBg').style.backgroundImage=`url('${CAT_IMGS[cat]}')`;
+  document.getElementById('catHeroEmoji').textContent=CAT_EMOJI[cat]||'👗';
+  document.getElementById('catHeroTitle').textContent=cat;
+  document.getElementById('catHeroDesc').textContent=CAT_DESC[cat]||'';
+  // subcats
+  const scr=document.getElementById('catSubcatRow');
+  if(SUBCATS[cat]){
+    scr.innerHTML=SUBCATS[cat].map(s=>`<button class="subcat-chip${s==='All'?' active':''}" onclick="setCatSubcat(this,'${s}')">${s}</button>`).join('');
+    scr.style.display='flex';
+  } else scr.style.display='none';
+  renderCatGrid();
+  showPage('cat');
+}
+function renderCatGrid(){
+  let list=ITEMS.filter(i=>{
+    if(i.cat!==catPageCat)return false;
+    if(catPageSubcat&&catPageSubcat!=='All'&&i.subcat!==catPageSubcat)return false;
+    if(catPageTab==='nearby')return i.nearby;
+    return true;
+  });
+  renderGrid('catGrid',list,'catCount');
+}
+function setCatSubcat(btn,s){
+  document.querySelectorAll('#catSubcatRow .subcat-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');catPageSubcat=s==='All'?'':s;renderCatGrid();
+}
+function setCatTab(btn,tab){
+  document.querySelectorAll('#catPage .browse-tabs .btab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');catPageTab=tab;renderCatGrid();
+}
+
+/* WISHLIST */
+function toggleSave(e,id){
+  e.stopPropagation();
+  savedSet.has(id)?savedSet.delete(id):savedSet.add(id);
+  if(savedSet.has(id)){
+    const item=ITEMS.find(i=>i.id===id);
+    openAction('save',item?.name||'Item');
+  }
+  filterBrowse();
+  if(currentPage==='cat')renderCatGrid();
+}
+
+/* ACTIONS MODAL */
+const ACTIONS={
+  buy:n=>({bg:'#FFF3E0',ic:'🛍',title:'Order Placed!',body:`Your order for <strong>"${n}"</strong> has been placed. The seller will confirm and arrange delivery or pickup shortly!`}),
+  save:n=>({bg:'#E8EAF6',ic:'🔖',title:'Saved to Wishlist!',body:`<strong>"${n}"</strong> has been bookmarked to your wishlist.`}),
+  swap:n=>({bg:'#FFF3E0',ic:'🛍',title:'Order Placed!',body:`Your order for <strong>"${n}"</strong> has been placed. The seller will confirm and arrange delivery shortly!`}),
+};
+function openAction(type,name){
+  const c=ACTIONS[type](name);
+  document.getElementById('confIcon').style.background=c.bg;
+  document.getElementById('confIcon').textContent=c.ic;
+  document.getElementById('confTitle').textContent=c.title;
+  document.getElementById('confBody').innerHTML=c.body;
+  document.getElementById('actionModal').classList.add('open');
+}
+function closeActionModal(){document.getElementById('actionModal').classList.remove('open');}
+document.getElementById('actionModal').addEventListener('click',function(e){if(e.target===this)closeActionModal();});
+
+/* LOGIN */
+function openLogin(){document.getElementById('loginModal').classList.add('open');}
+function closeLogin(){document.getElementById('loginModal').classList.remove('open');}
+function doLogin(){closeLogin();openAction('save','Welcome! You are now logged in.');}
+document.getElementById('loginModal').addEventListener('click',function(e){if(e.target===this)closeLogin();});
+function switchMTab(btn,formId){
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.modal-form').forEach(f=>f.classList.remove('active'));
+  document.getElementById(formId).classList.add('active');
+}
+
+/* UPLOAD */
+const dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--saffron)';});
+dz.addEventListener('dragleave',()=>{dz.style.borderColor='';});
+dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f)dz.innerHTML=`<div class="dz-ic">✅</div><p><strong>${f.name}</strong></p><p><small>Ready!</small></p>`;});
+function handleFile(inp){if(inp.files[0])dz.innerHTML=`<div class="dz-ic">✅</div><p><strong>${inp.files[0].name}</strong></p><p><small>Ready!</small></p>`;}
+function doUpload(){
+  const n=document.getElementById('iName').value.trim();
+  if(!n){alert('Please enter an item name.');return;}
+  const cat=document.getElementById('iCat').value;
+  const loc=document.getElementById('iLoc').value;
+  ITEMS.unshift({id:Date.now(),name:n,cat,subcat:cat,size:document.getElementById('iSize').value,cond:document.getElementById('iCond').value,type:document.getElementById('iType').value.toLowerCase(),owner:'You',loc,nearby:loc==='Raipur',trending:false,img:`https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&q=80`,emoji:CAT_EMOJI[cat]||'👕'});
+  ['iName','iDesc'].forEach(id=>document.getElementById(id).value='');
+  dz.innerHTML=`<div class="dz-ic">🎨</div><p><strong>Click to upload</strong> or drag &amp; drop</p><p><small>PNG / JPG up to 5MB</small></p><input type="file" id="fileIn" accept="image/*" style="display:none" onchange="handleFile(this)"/>`;
+  const t=document.getElementById('toast');t.style.display='block';setTimeout(()=>t.style.display='none',4000);
+}
+
+/* COMMUNITY */
+const MEMBERS=[
+  {name:'Priya M.',loc:'Delhi',swaps:24,avatar:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80',ic:'🏆'},
+  {name:'Arjun K.',loc:'Bangalore',swaps:18,avatar:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80',ic:'🥈'},
+  {name:'Kavya R.',loc:'Raipur',swaps:16,avatar:'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&q=80',ic:'🌿'},
+  {name:'Dev R.',loc:'Hyderabad',swaps:14,avatar:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80',ic:'🌟'},
+  {name:'Meera P.',loc:'Chennai',swaps:12,avatar:'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80',ic:'💚'},
+  {name:'Sara T.',loc:'Mumbai',swaps:10,avatar:'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&q=80',ic:'♻️'},
+  {name:'Rahul S.',loc:'Pune',swaps:9,avatar:'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80',ic:'👗'},
+  {name:'Nisha R.',loc:'Surat',swaps:7,avatar:'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&q=80',ic:'🎀'},
+];
+const ACTIVITIES=[
+  {av:'🌟',text:'<strong>Arjun K.</strong> bought a Nike Air Force 1 from <strong>Rahul M.</strong>',time:'2 minutes ago'},
+  {av:'💚',text:'<strong>Kavya R.</strong> listed a Handloom Saree Top in the Raipur community',time:'15 minutes ago'},
+  {av:'🛍',text:'<strong>Priya M.</strong> bought a new Floral Silk Wrap Dress',time:'32 minutes ago'},
+  {av:'🏆',text:'<strong>Meera P.</strong> bought her 12th item and earned the Eco Champion badge',time:'1 hour ago'},
+  {av:'🛍',text:'<strong>FabIndia Raipur</strong> listed 40 unsold kurtas on the ReWear Marketplace',time:'2 hours ago'},
+  {av:'👟',text:'<strong>Dev R.</strong> listed Adidas Stan Smith sneakers for sale',time:'3 hours ago'},
+  {av:'🌿',text:'<strong>Sara T.</strong> listed High-Waist Linen Pants in Mumbai',time:'5 hours ago'},
+];
+function renderCommunity(){
+  document.getElementById('membersGrid').innerHTML=MEMBERS.map(m=>`
+    <div class="member-card">
+      <img class="member-av" src="${m.avatar}" alt="${m.name}" onerror="this.style.display='none'"/>
+      <div class="member-name">${m.ic} ${m.name}</div>
+      <div class="member-loc">📍 ${m.loc}</div>
+      <div class="member-stats"><span class="mem-stat">🛍 ${m.swaps} items bought</span></div>
+    </div>`).join('');
+  document.getElementById('activityFeed').innerHTML=ACTIVITIES.map(a=>`
+    <div class="activity-item">
+      <div class="act-av">${a.av}</div>
+      <div><div class="act-text">${a.text}</div><div class="act-time">⏱ ${a.time}</div></div>
+    </div>`).join('');
+}
+
+/* COUNTERS */
+function animCount(el,target){
+  let v=0;const s=target/(2400/16);
+  const t=setInterval(()=>{v+=s;if(v>=target){v=target;clearInterval(t);}el.textContent=target>=1000000?(v/1000000).toFixed(1)+'M':Math.floor(v).toLocaleString();},16);
+}
+let counted=false;
+function initCounters(){
+  if(counted)return;counted=true;
+  setTimeout(()=>{
+    animCount(document.getElementById('c1'),8423);
+    animCount(document.getElementById('c2'),12600);
+    animCount(document.getElementById('c3'),22740000);
+  },500);
+}
+
+/* REVEAL OBSERVER */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      if(e.target.closest('#impactSection'))initCounters();
+    }
+  });
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* FAQ */
+function toggleFaq(el){el.classList.toggle('open');}
+
+/* INIT */
+filterBrowse();
+
+/* ══ PROVIDER FORM ══ */
+const pdz=document.getElementById('provDropZone');
+pdz.addEventListener('dragover',e=>{e.preventDefault();pdz.style.borderColor='var(--saffron)';});
+pdz.addEventListener('dragleave',()=>{pdz.style.borderColor='';});
+pdz.addEventListener('drop',e=>{e.preventDefault();pdz.style.borderColor='';const f=e.dataTransfer.files;if(f.length)pdz.innerHTML=`<div class="pdz-ic">✅</div><p><strong>${f.length} image${f.length>1?'s':''} selected</strong></p><p><small>Ready to upload</small></p>`;});
+function handleProvFile(inp){if(inp.files.length)pdz.innerHTML=`<div class="pdz-ic">✅</div><p><strong>${inp.files.length} image${inp.files.length>1?'s':''} selected</strong></p><p><small>Ready to upload</small></p>`;}
+function doProviderSubmit(){
+  const n=document.getElementById('pName').value.trim();
+  const b=document.getElementById('pBrand').value.trim();
+  const e=document.getElementById('pEmail').value.trim();
+  if(!n||!b||!e){alert('Please fill in Provider Name, Brand Name, and Email.');return;}
+  const t=document.getElementById('provToast');
+  t.style.display='block';
+  setTimeout(()=>t.style.display='none',6000);
+  ['pName','pBrand','pEmail','pQty','pOrigPrice','pDiscPrice','pNotes'].forEach(id=>{document.getElementById(id).value='';});
+  pdz.innerHTML=`<div class="pdz-ic">📦</div><p><strong>Upload product images</strong> or drag &amp; drop</p><p><small>PNG / JPG, up to 10MB per image</small></p><input type="file" id="provFileIn" accept="image/*" multiple style="display:none" onchange="handleProvFile(this)"/>`;
+}
+
+/* ══ MARKETPLACE DATA ══ */
+const MKT_ITEMS=[
+  {id:1,name:'Cotton Kurta Set – Navy Blue',provider:'FabWeave Boutique',loc:'Raipur',cat:'Tops',cond:'New (Unsold)',orig:1299,disc:449,img:'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=500&q=80',tag:'60% OFF'},
+  {id:2,name:'Handblock Print Midi Dress',provider:'Jaipur Fabric House',loc:'Jaipur',cat:'Dresses',cond:'New (Unsold)',orig:2199,disc:749,img:'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500&q=80',tag:'65% OFF'},
+  {id:3,name:'Linen Wide-Leg Trousers',provider:'StudioWear Delhi',loc:'Delhi',cat:'Bottoms',cond:'New (Unsold)',orig:1799,disc:599,img:'https://images.unsplash.com/photo-1594938298603-c8148c4b4237?w=500&q=80',tag:'66% OFF'},
+  {id:4,name:'Caramel Wool Blend Blazer',provider:'Metro Formals Pune',loc:'Pune',cat:'Outerwear',cond:'New (Unsold)',orig:3499,disc:1099,img:'https://images.unsplash.com/photo-1594938374182-a57b477a4e7b?w=500&q=80',tag:'68% OFF'},
+  {id:5,name:'Floral Wrap Midi Dress',provider:'Bloom & Thread',loc:'Mumbai',cat:'Dresses',cond:'New (Unsold)',orig:1999,disc:699,img:'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&q=80',tag:'65% OFF'},
+  {id:6,name:'Raw Denim Jacket – Indigo',provider:'UrbanEdge Factory',loc:'Ahmedabad',cat:'Outerwear',cond:'Slight Defect',orig:2599,disc:699,img:'https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=500&q=80',tag:'73% OFF'},
+  {id:7,name:'Gold Satin Evening Clutch',provider:'Luxe Accessories Co.',loc:'Chennai',cat:'Accessories',cond:'New (Unsold)',orig:899,disc:299,img:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&q=80',tag:'66% OFF'},
+  {id:8,name:'Block Print Cotton Kurti',provider:'Artisan Threads',loc:'Lucknow',cat:'Tops',cond:'New (Unsold)',orig:999,disc:349,img:'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=500&q=80',tag:'65% OFF'},
+  {id:9,name:'Suede Ankle Boots – Tan',provider:'FootFirst Warehouse',loc:'Bangalore',cat:'Footwear',cond:'New (Unsold)',orig:3199,disc:999,img:'https://images.unsplash.com/photo-1605812860427-4024433a70fd?w=500&q=80',tag:'68% OFF'},
+  {id:10,name:'White Linen Oversized Shirt',provider:'StudioWear Delhi',loc:'Delhi',cat:'Tops',cond:'New (Unsold)',orig:1299,disc:429,img:'https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=500&q=80',tag:'67% OFF'},
+  {id:11,name:'Terracotta Skirt – Midi',provider:'Bloom & Thread',loc:'Mumbai',cat:'Bottoms',cond:'New (Unsold)',orig:1499,disc:499,img:'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=500&q=80',tag:'66% OFF'},
+  {id:12,name:'Canvas Backpack – Beige',provider:'TrekStyle Co.',loc:'Hyderabad',cat:'Accessories',cond:'Slight Defect',orig:1799,disc:549,img:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80',tag:'69% OFF'},
+];
+let mktSort='discount';
+const mktSavedSet=new Set();
+
+function pct(o,d){return Math.round((1-d/o)*100)+'% OFF';}
+function makeMktCard(item){
+  const saving=item.orig-item.disc;
+  return `<div class="mkt-card">
+    <div class="mkt-img">
+      <img src="${item.img}" alt="${item.name}" loading="lazy" onerror="this.style.display='none'"/>
+      <div class="mkt-provider-badge">✅ Verified Provider</div>
+      <div class="mkt-cond-badge">${item.cond}</div>
+      <div class="mkt-disc-ribbon">${pct(item.orig,item.disc)}</div>
+    </div>
+    <div class="mkt-body">
+      <div class="mkt-title" title="${item.name}">${item.name}</div>
+      <div class="mkt-provider">🏪 ${item.provider} &nbsp;·&nbsp; 📍 ${item.loc}</div>
+      <div class="mkt-prices">
+        <span class="mkt-orig">₹${item.orig.toLocaleString()}</span>
+        <span class="mkt-disc">₹${item.disc.toLocaleString()}</span>
+        <span class="mkt-saving">Save ₹${saving.toLocaleString()}</span>
+      </div>
+      <div class="mkt-actions">
+        <button class="btn-mkt-buy" onclick="openAction('swap','${item.name.replace(/'/g,"\\'")}')">🛍 Buy Now</button>
+        <button class="btn-mkt-save" onclick="toggleMktSave(event,${item.id})" title="Save">${mktSavedSet.has(item.id)?'❤️':'🤍'}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function filterMarketplace(){
+  const q=(document.getElementById('mktSearch')?.value||'').toLowerCase();
+  const cat=document.getElementById('mktCatFilter')?.value||'';
+  const cond=document.getElementById('mktCondFilter')?.value||'';
+  let list=MKT_ITEMS.filter(i=>{
+    if(cat&&i.cat!==cat)return false;
+    if(cond&&i.cond!==cond)return false;
+    if(q&&!(i.name.toLowerCase().includes(q)||i.provider.toLowerCase().includes(q)||i.cat.toLowerCase().includes(q)||i.loc.toLowerCase().includes(q)))return false;
+    return true;
+  });
+  if(mktSort==='discount')list.sort((a,b)=>(b.orig-b.disc)/b.orig-(a.orig-a.disc)/a.orig);
+  if(mktSort==='price_asc')list.sort((a,b)=>a.disc-b.disc);
+  if(mktSort==='price_desc')list.sort((a,b)=>b.disc-a.disc);
+  const g=document.getElementById('mktGrid');
+  const c=document.getElementById('mktCount');
+  if(!list.length){
+    g.innerHTML='<div class="mkt-empty"><div class="mkt-empty-ic">🛍</div><p>No products match your filters. Try adjusting your search!</p></div>';
+    c.textContent='';return;
+  }
+  c.textContent=`Showing ${list.length} verified product${list.length!==1?'s':''}`;
+  g.innerHTML=list.map(i=>makeMktCard(i)).join('');
+}
+function setMktSort(btn,sort){
+  document.querySelectorAll('.mkt-filter-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');mktSort=sort;filterMarketplace();
+}
+function toggleMktSave(e,id){
+  e.stopPropagation();
+  mktSavedSet.has(id)?mktSavedSet.delete(id):mktSavedSet.add(id);
+  if(mktSavedSet.has(id)){const item=MKT_ITEMS.find(i=>i.id===id);openAction('save',item?.name||'Item');}
+  filterMarketplace();
+}
+
+/* init marketplace on load */
+filterMarketplace();
+
+function go(sel){document.querySelector(sel)?.scrollIntoView({behavior:'smooth'});}
+</script>
+</body>
+</html>
