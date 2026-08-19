@@ -1,34 +1,71 @@
-# 👕 ReWear
+# 🛍️ ReWear
 
-## Sustainable Clothing Marketplace
+### Sustainable Clothing Marketplace
 
-ReWear is a sustainable clothing marketplace that connects clothing providers with customers, encouraging clothing reuse and reducing textile waste.
-
----
-
-## Features
-
-- Browse available clothing items
-- List clothes for exchange or reuse
-- User-friendly interface
-- Sustainable fashion initiative
+A modern and responsive marketplace designed to make buying and discovering
+pre-loved clothing simple, accessible, and sustainable.
 
 ---
 
-## Technologies Used
+## ✨ Overview
+
+ReWear is a web-based sustainable fashion marketplace that provides users
+with an engaging interface for discovering pre-loved clothing.
+
+The project focuses on creating a clean, modern, and responsive shopping
+experience.
+
+---
+
+## 📸 Preview
+
+![ReWear Homepage](screenshots/homepage.png)
+
+---
+
+## ✨ Features
+
+- 🛍️ Browse clothing products
+- 🔎 Product discovery
+- 📱 Responsive design
+- 🎨 Modern user interface
+- ♻️ Sustainability-focused marketplace concept
+- ... 
+
+---
+
+## 📸 Screenshots of Project
+
+### Homepage
+
+![Homepage](screenshots/homepage.png)
+
+### Product Listing
+
+![Product Listing](screenshots/products.png)
+
+### Product Details
+
+![Product Details](screenshots/product-details.png)
+
+### Mobile View
+
+![Mobile View](screenshots/mobile.png)
+
+---
+
+## 🛠️ Tech Stack
 
 - HTML
 - CSS
 - JavaScript
+- ...
 
 ---
 
-## Project Presentation
+## 🚀 Getting Started
 
-📄 Re-wear Presentation PPT
+### Clone the repository
 
----
-
-## Developed By
-
-Swechha Sinha
+```bash
+git clone https://github.com/7swechha/ReWear.git
