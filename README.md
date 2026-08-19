@@ -19,7 +19,7 @@ experience.
 
 ## 📸 Preview
 
-![ReWear Homepage](screenshots/homepage.png)
+![ReWear Homepage] Rewear Homepage.png
 
 ---
 
@@ -38,19 +38,16 @@ experience.
 
 ### Homepage
 
-![Homepage](screenshots/homepage.png)
+![Homepage] Rewear Homepage.png
 
 ### Product Listing
 
-![Product Listing](screenshots/products.png)
+![Product Listing] Community and Borwsing.png
 
 ### Product Details
 
-![Product Details](screenshots/product-details.png)
+![Product Details] Marketplace and Provider Dashboard
 
-### Mobile View
-
-![Mobile View](screenshots/mobile.png)
 
 ---
 
@@ -63,9 +60,8 @@ experience.
 
 ---
 
-## 🚀 Getting Started
+## Author- Swechha Sinha
 
-### Clone the repository
 
-```bash
+
 git clone https://github.com/7swechha/ReWear.git
